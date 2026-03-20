@@ -1,0 +1,27 @@
+{
+  "name": "copywritingskills-rmbc",
+  "version": "1.0.0",
+  "description": "Stefan Georgi's RMBC methodology as agent skills for Claude Code, Claude Desktop, OpenAI, and any Agent Skills-compatible platform.",
+  "keywords": [
+    "claude-skills",
+    "rmbc",
+    "copywriting",
+    "direct-response",
+    "agent-skills"
+  ],
+  "homepage": "https://github.com/StefanGeorgi/copywritingskills-rmbc",
+  "license": "MIT",
+  "author": "Stefan Georgi",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/StefanGeorgi/copywritingskills-rmbc.git"
+  },
+  "skills": {
+    "directory": "skills",
+    "count": 41
+  },
+  "skillkit": {
+    "skills_dir": "./skills",
+    "openai_dir": "./openai"
+  }
+}
