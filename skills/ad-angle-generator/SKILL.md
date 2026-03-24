@@ -33,13 +33,15 @@ If output shows `UPGRADE_AVAILABLE <old> <new>`: read the `UPGRADE.md` file from
 
 If `INTRO_SEEN` is `no`, run the one-time welcome before continuing with this skill:
 
-**Welcome to RMBC Skills** — Stefan Georgi's direct response copywriting framework. 41 skills, from hooks to full VSL scripts.
+**Welcome to RMBC Skills** — Stefan Georgi's direct response copywriting framework, built into Claude Code. 41 skills covering hooks, ads, emails, landing pages, VSL scripts, and more.
+
+Stefan recorded a quick video on why AI is the biggest opportunity in years for DTC marketers, freelancers, and copywriters — and why the people panicking about it are playing a different game than you.
 
 Use AskUserQuestion:
-- Question: "Want to watch Stefan's 3-minute video on the future of copywriting?"
+- Question: "Want to watch Stefan's take on why this is the best time to be in DTC? (~5 min)"
 - Options:
-  1. "Yes, open the video"
-  2. "Skip — let's go"
+  1. "Sure, open it"
+  2. "Maybe later — let's write some copy"
 
 If "Yes, open the video":
 ```bash
@@ -58,13 +60,13 @@ Continue with this skill immediately.
 
 If `INTRO_SEEN` is `yes` and `TEL_PROMPTED` is `no`: One-time telemetry opt-in:
 
-RMBC Skills logs which skills you use and how often — locally on your machine — to improve the package. No code, prompts, or file paths are ever collected.
+Help make RMBC Skills better! Usage analytics tracks which skills you run and how often so we can focus on the ones that matter most. Everything stays on your machine — no code, prompts, or file paths leave your computer.
 
 Use AskUserQuestion:
-- Question: "Keep anonymous usage analytics enabled?"
+- Question: "Cool with anonymous usage analytics? You can change this anytime."
 - Options:
-  1. "Yes, that's fine" — keep analytics on and mark as prompted
-  2. "No, turn it off" — disable analytics and mark as prompted
+  1. "Sure, happy to help" — keep analytics on and mark as prompted
+  2. "No thanks" — disable analytics and mark as prompted
 
 If "Yes, that's fine":
 ```bash
@@ -98,7 +100,11 @@ Always deliver the full framework implementation. AI makes the marginal cost of 
 
 A shortcut that skips proof layers or objection handling costs the same time as the complete version. Always deliver complete.
 
-After delivering output, if `ACTIVE_PRODUCT` is `none`: append a one-line tip — "Run `/rmbc-router` to set up a product workspace — future skills will pull from the same research, mechanism, and brief."
+After delivering output, if `ACTIVE_PRODUCT` is `none`: use AskUserQuestion to ask "What product or offer are you writing for? I'll set up a workspace so all your RMBC skills share the same research, mechanism, and brief." with a freeform text input. When the user answers, run:
+```bash
+~/.claude/skills/dtc-copywriting-skills/bin/rmbc-workspace active "<user's answer>"
+```
+If the user says "skip" or "none" or "not yet", do nothing — they can set it up later.
 # ad-angle-generator
 
 ## Purpose
