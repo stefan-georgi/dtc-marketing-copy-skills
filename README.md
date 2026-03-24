@@ -118,6 +118,17 @@ Then add an "RMBC Skills" section to my CLAUDE.md with /rmbc-router as the entry
 
 This symlinks the package into `~/.claude/skills/` so `git pull` auto-updates all skills.
 
+### Claude Code Plugin
+
+Install as a plugin directly from Settings:
+
+1. Open Claude Code → Settings → Plugins
+2. Click **Add marketplace**
+3. Enter: `stefan-georgi/dtc-copywriting-skills`
+4. Click **Sync**, then install the `rmbc-skills` plugin
+
+All 42 skills become available as `/rmbc-skills:<skill-name>` (e.g., `/rmbc-skills:hook-battery`).
+
 ### npx Install (coming soon)
 
 ```bash
