@@ -120,12 +120,14 @@ This symlinks the package into `~/.claude/skills/` so `git pull` auto-updates al
 
 ### Claude Code Plugin
 
-Install as a plugin directly from Settings:
+Install as a plugin directly from the CLI or Settings:
 
-1. Open Claude Code → Settings → Plugins
-2. Click **Add marketplace**
-3. Enter: `stefan-georgi/dtc-copywriting-skills`
-4. Click **Sync**, then install the `rmbc-skills` plugin
+```bash
+claude plugins marketplace add https://github.com/stefan-georgi/dtc-copywriting-skills.git
+claude plugins install rmbc-skills
+```
+
+Or via Settings → Plugins → Add marketplace → enter `https://github.com/stefan-georgi/dtc-copywriting-skills.git`, then install `rmbc-skills`.
 
 All 42 skills become available as `/rmbc-skills:<skill-name>` (e.g., `/rmbc-skills:hook-battery`).
 
