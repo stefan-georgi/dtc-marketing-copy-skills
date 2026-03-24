@@ -92,6 +92,14 @@ last_update_check: ""
 active_product: ""
 YAML
 fi
+# Reset onboarding state so fresh install triggers intro + workspace setup
+rm -f "$STATE_DIR/.intro-seen" "$STATE_DIR/.capro-seen" "$STATE_DIR/.telemetry-prompted"
+# Clear active product — user picks via /rmbc-router after install
+if command -v sd &>/dev/null; then
+  sd -s 'active_product: .*' 'active_product: ""' "$STATE_DIR/config.yaml" 2>/dev/null || true
+else
+  sed -i'' -e 's/active_product: .*/active_product: ""/' "$STATE_DIR/config.yaml" 2>/dev/null || true
+fi
 
 # Hint for non-git downloads
 if [ ! -d "$PKG_ROOT/.git" ]; then
