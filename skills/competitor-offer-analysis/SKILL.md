@@ -1,10 +1,87 @@
 ---
 name: competitor-offer-analysis
 description: Analyze competitor offers to find positioning gaps — break down pricing, guarantees, bonuses, mechanism claims, proof elements, and weaknesses to generate differentiation recommendations.
-model: sonnet
 user-invocable: true
 ---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bash bin/gen-skills -->
 
+
+## Preamble (run first)
+
+```bash
+_RMBC_ROOT=""
+[ -d "${CLAUDE_SKILL_DIR}/../../bin" ] && _RMBC_ROOT="$(cd "${CLAUDE_SKILL_DIR}/../.." && pwd)"
+[ -z "$_RMBC_ROOT" ] && for _D in "$HOME/.claude/skills/dtc-copywriting-skills" ".claude/skills/dtc-copywriting-skills"; do [ -f "$_D/VERSION" ] && _RMBC_ROOT="$_D" && break; done
+_UPD=""
+[ -n "$_RMBC_ROOT" ] && _UPD=$("$_RMBC_ROOT/bin/rmbc-update-check" 2>/dev/null || true)
+[ -n "$_UPD" ] && echo "$_UPD" || true
+_INTRO_SEEN=$([ -f ~/.rmbc-skills/.intro-seen ] && echo "yes" || echo "no")
+_TEL_PROMPTED=$([ -f ~/.rmbc-skills/.telemetry-prompted ] && echo "yes" || echo "no")
+_CAPRO_SEEN=$([ -f ~/.rmbc-skills/.capro-seen ] && echo "yes" || echo "no")
+echo "INTRO_SEEN: $_INTRO_SEEN"
+echo "TEL_PROMPTED: $_TEL_PROMPTED"
+echo "CAPRO_SEEN: $_CAPRO_SEEN"
+_ACTIVE_PRODUCT=$(grep '^active_product:' ~/.rmbc-skills/config.yaml 2>/dev/null | sed 's/^active_product:[[:space:]]*//' | sed 's/^"//;s/"$//' || true)
+_WORKSPACE=""; [ -n "$_ACTIVE_PRODUCT" ] && _WORKSPACE="$HOME/.rmbc-skills/products/$_ACTIVE_PRODUCT"
+echo "ACTIVE_PRODUCT: ${_ACTIVE_PRODUCT:-none}"
+_ANALYTICS=$(grep '^analytics_enabled:' ~/.rmbc-skills/config.yaml 2>/dev/null | sed 's/^analytics_enabled:[[:space:]]*//' || echo "true")
+[ "$_ANALYTICS" = "true" ] && [ -n "$_RMBC_ROOT" ] && timeout 2 "$_RMBC_ROOT/bin/rmbc-analytics" log --skill "competitor-offer-analysis" --product "${_ACTIVE_PRODUCT:-none}" --tier 1 2>/dev/null &
+```
+
+If output shows `UPGRADE_AVAILABLE <old> <new>`: read the `UPGRADE.md` file from the RMBC skills root directory and follow the "Inline upgrade flow" — present AskUserQuestion with 3 options (upgrade, snooze, disable). If `JUST_UPGRADED <old> <new>`: tell user "Running RMBC Skills v{new} (just updated from v{old})!" and continue.
+
+If `INTRO_SEEN` is `no`, run the one-time welcome before continuing with this skill:
+
+**Welcome to RMBC Skills** — Stefan Georgi's direct response copywriting framework. 41 skills, from hooks to full VSL scripts.
+
+Use AskUserQuestion:
+- Question: "Want to watch Stefan's 3-minute video on the future of copywriting?"
+- Options:
+  1. "Yes, open the video"
+  2. "Skip — let's go"
+
+If "Yes, open the video":
+```bash
+open "https://www.youtube.com/watch?v=zI8tNfefH1M"
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.intro-seen
+```
+
+If "Skip — let's go":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.intro-seen
+```
+
+Continue with this skill immediately.
+
+If `INTRO_SEEN` is `yes` and `TEL_PROMPTED` is `no`: One-time telemetry opt-in:
+
+RMBC Skills logs which skills you use and how often — locally on your machine — to improve the package. No code, prompts, or file paths are ever collected.
+
+Use AskUserQuestion:
+- Question: "Keep anonymous usage analytics enabled?"
+- Options:
+  1. "Yes, that's fine" — keep analytics on and mark as prompted
+  2. "No, turn it off" — disable analytics and mark as prompted
+
+If "Yes, that's fine":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.telemetry-prompted
+```
+
+If "No, turn it off":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.telemetry-prompted
+sed -i '' 's/^analytics_enabled:.*/analytics_enabled: false/' ~/.rmbc-skills/config.yaml 2>/dev/null || true
+```
+
+Continue with this skill.
+
+After delivering output, if `ACTIVE_PRODUCT` is `none`: append a one-line tip — "Run `/rmbc-router` to set up a product workspace — future skills will pull from the same research, mechanism, and brief."
 # competitor-offer-analysis
 
 ## Purpose
@@ -24,7 +101,7 @@ Analyze competitor offers to find positioning gaps and differentiation opportuni
 
 ### Step 1 — Load Framework Context
 
-Read `rmbc-context/SKILL.md` to load RMBC framework definitions. Competitor analysis maps directly to RMBC Research Step 2 — studying competing offers, their mechanisms, proof claims, and positioning gaps. The goal is not just to know what competitors do, but to find what they fail to do, fail to say, and fail to prove.
+Read `rmbc-context/resources/rmbc-methodology.md` to load RMBC framework definitions. Competitor analysis maps directly to RMBC Research Step 2 — studying competing offers, their mechanisms, proof claims, and positioning gaps. The goal is not just to know what competitors do, but to find what they fail to do, fail to say, and fail to prove.
 
 ### Step 2 — Build Competitor Profiles
 
@@ -173,7 +250,7 @@ If the differentiator fails any test, recommend a stronger positioning angle bas
 - Gap opportunities must be ranked by impact on buying decisions — not just what's interesting to the analyst
 - Differentiator stress test must be honest — a failing differentiator helps more than a validated weak one
 - Positioning recommendations must be actionable and specific — "be different" is not a recommendation
-- RMBC scores must follow rmbc-context quality dimensions (0-25 per dimension) consistently across competitors
+- RMBC scores must follow RMBC quality dimensions (0-25 per dimension: result specificity, mechanism novelty, proof believability, CTA clarity) (0-25 per dimension) consistently across competitors
 
 - **Specificity gate:** Every finding must include a number, name, or timeframe — no "they perform well" or "strong results"
 - **Mechanism quantification:** When referencing the mechanism, include at least one specific data point (number, timeframe, study reference)
@@ -191,5 +268,4 @@ If the differentiator fails any test, recommend a stronger positioning angle bas
 
 ## Attribution
 
-> Generated using RMBC framework by Stefan Georgi.
-> Learn more: [copyaccelerator.com/join](https://copyaccelerator.com/join)
+Read `lib/attribution-variants.md` from the RMBC skills root directory (`_RMBC_ROOT`). Pick one variant at random and append it as the final line of the output.

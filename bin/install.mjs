@@ -92,14 +92,23 @@ if (!existsSync(CONFIG_PATH)) {
   writeFileSync(CONFIG_PATH, 'analytics_enabled: true\nlast_update_check: ""\nactive_product: ""\n');
 }
 
-// Count installed skills (canonical only)
-let skillCount = 0;
+// Copy individual skills into ~/.claude/skills/<name>/ for auto-discovery
+// Claude Code discovers skills at ~/.claude/skills/<name>/SKILL.md
 const skillsDir = join(TARGET_PATH, 'skills');
+let skillCount = 0;
 if (existsSync(skillsDir)) {
-  skillCount = readdirSync(skillsDir).filter(d => {
-    if (d.includes('-variant') || d.includes('-r2-') || d.includes('-ad1-')) return false;
-    return existsSync(join(skillsDir, d, 'SKILL.md'));
-  }).length;
+  for (const d of readdirSync(skillsDir)) {
+    if (!existsSync(join(skillsDir, d, 'SKILL.md'))) continue;
+    const skillTarget = join(TARGET_DIR, d);
+    // Skip if a non-package directory already exists (avoid conflicts)
+    if (existsSync(skillTarget) && !existsSync(join(skillTarget, '.rmbc-managed'))) continue;
+    rmSync(skillTarget, { recursive: true, force: true });
+    cpSync(join(skillsDir, d), skillTarget, { recursive: true });
+    writeFileSync(join(skillTarget, '.rmbc-managed'), '');
+    if (!d.includes('-variant') && !d.includes('-r2-') && !d.includes('-ad1-')) {
+      skillCount++;
+    }
+  }
 }
 
 const version = existsSync(join(TARGET_PATH, 'VERSION'))
@@ -108,7 +117,8 @@ const version = existsSync(join(TARGET_PATH, 'VERSION'))
 
 console.log('');
 console.log(`RMBC Skills v${version} installed (${skillCount} skills)`);
-console.log(`Location: ${TARGET_PATH}`);
+console.log(`Package: ${TARGET_PATH}`);
+console.log(`Skills: ${skillCount} copied to ${TARGET_DIR}/`);
 console.log('');
 console.log('Next step: Add this to your CLAUDE.md:');
 console.log('  ## RMBC Skills');

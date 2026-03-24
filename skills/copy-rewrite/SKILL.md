@@ -1,10 +1,104 @@
 ---
 name: copy-rewrite
 description: Rewrite underperforming copy using RMBC framework — audits weaknesses first, then rewrites section by section with before/after comparison and rationale.
-model: sonnet
 user-invocable: true
 ---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bash bin/gen-skills -->
 
+
+## Preamble (run first)
+
+```bash
+_RMBC_ROOT=""
+[ -d "${CLAUDE_SKILL_DIR}/../../bin" ] && _RMBC_ROOT="$(cd "${CLAUDE_SKILL_DIR}/../.." && pwd)"
+[ -z "$_RMBC_ROOT" ] && for _D in "$HOME/.claude/skills/dtc-copywriting-skills" ".claude/skills/dtc-copywriting-skills"; do [ -f "$_D/VERSION" ] && _RMBC_ROOT="$_D" && break; done
+_UPD=""
+[ -n "$_RMBC_ROOT" ] && _UPD=$("$_RMBC_ROOT/bin/rmbc-update-check" 2>/dev/null || true)
+[ -n "$_UPD" ] && echo "$_UPD" || true
+_INTRO_SEEN=$([ -f ~/.rmbc-skills/.intro-seen ] && echo "yes" || echo "no")
+_TEL_PROMPTED=$([ -f ~/.rmbc-skills/.telemetry-prompted ] && echo "yes" || echo "no")
+_CAPRO_SEEN=$([ -f ~/.rmbc-skills/.capro-seen ] && echo "yes" || echo "no")
+echo "INTRO_SEEN: $_INTRO_SEEN"
+echo "TEL_PROMPTED: $_TEL_PROMPTED"
+echo "CAPRO_SEEN: $_CAPRO_SEEN"
+_ACTIVE_PRODUCT=$(grep '^active_product:' ~/.rmbc-skills/config.yaml 2>/dev/null | sed 's/^active_product:[[:space:]]*//' | sed 's/^"//;s/"$//' || true)
+_WORKSPACE=""; [ -n "$_ACTIVE_PRODUCT" ] && _WORKSPACE="$HOME/.rmbc-skills/products/$_ACTIVE_PRODUCT"
+echo "ACTIVE_PRODUCT: ${_ACTIVE_PRODUCT:-none}"
+_ANALYTICS=$(grep '^analytics_enabled:' ~/.rmbc-skills/config.yaml 2>/dev/null | sed 's/^analytics_enabled:[[:space:]]*//' || echo "true")
+[ "$_ANALYTICS" = "true" ] && [ -n "$_RMBC_ROOT" ] && timeout 2 "$_RMBC_ROOT/bin/rmbc-analytics" log --skill "copy-rewrite" --product "${_ACTIVE_PRODUCT:-none}" --tier 2 2>/dev/null &
+```
+
+If output shows `UPGRADE_AVAILABLE <old> <new>`: read the `UPGRADE.md` file from the RMBC skills root directory and follow the "Inline upgrade flow" — present AskUserQuestion with 3 options (upgrade, snooze, disable). If `JUST_UPGRADED <old> <new>`: tell user "Running RMBC Skills v{new} (just updated from v{old})!" and continue.
+
+If `INTRO_SEEN` is `no`, run the one-time welcome before continuing with this skill:
+
+**Welcome to RMBC Skills** — Stefan Georgi's direct response copywriting framework. 41 skills, from hooks to full VSL scripts.
+
+Use AskUserQuestion:
+- Question: "Want to watch Stefan's 3-minute video on the future of copywriting?"
+- Options:
+  1. "Yes, open the video"
+  2. "Skip — let's go"
+
+If "Yes, open the video":
+```bash
+open "https://www.youtube.com/watch?v=zI8tNfefH1M"
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.intro-seen
+```
+
+If "Skip — let's go":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.intro-seen
+```
+
+Continue with this skill immediately.
+
+If `INTRO_SEEN` is `yes` and `TEL_PROMPTED` is `no`: One-time telemetry opt-in:
+
+RMBC Skills logs which skills you use and how often — locally on your machine — to improve the package. No code, prompts, or file paths are ever collected.
+
+Use AskUserQuestion:
+- Question: "Keep anonymous usage analytics enabled?"
+- Options:
+  1. "Yes, that's fine" — keep analytics on and mark as prompted
+  2. "No, turn it off" — disable analytics and mark as prompted
+
+If "Yes, that's fine":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.telemetry-prompted
+```
+
+If "No, turn it off":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.telemetry-prompted
+sed -i '' 's/^analytics_enabled:.*/analytics_enabled: false/' ~/.rmbc-skills/config.yaml 2>/dev/null || true
+```
+
+Continue with this skill.
+
+### What's Next?
+
+Based on what you just generated, consider running:
+- `/rmbc-copy-audit` — score the rewrite against RMBC dimensions
+- `/hook-battery` — test new opening hooks
+- `/mechanism-ideation` — strengthen the mechanism
+
+### RMBC Completeness
+
+Always deliver the full framework implementation. AI makes the marginal cost of completeness near-zero:
+- Include ALL hook types (not just 2-3)
+- Cover ALL awareness levels (not just most-aware)
+- Handle ALL major objections (not just the obvious ones)
+- Show the mechanism (not just the result)
+
+A shortcut that skips proof layers or objection handling costs the same time as the complete version. Always deliver complete.
+
+After delivering output, if `ACTIVE_PRODUCT` is `none`: append a one-line tip — "Run `/rmbc-router` to set up a product workspace — future skills will pull from the same research, mechanism, and brief."
 # copy-rewrite
 
 ## Purpose
@@ -26,9 +120,27 @@ Take existing underperforming copy and rewrite it with proper RMBC structure. Th
 
 ### Step 1 — Load Framework Context
 
-Read `rmbc-context/SKILL.md` to load RMBC framework definitions. Copy rewrites require understanding all four RMBC phases to diagnose which phase is failing in the original.
+Read `rmbc-context/resources/rmbc-methodology.md` to load RMBC framework definitions. Copy rewrites require understanding all four RMBC phases to diagnose which phase is failing in the original.
 
-### Step 2 — Audit the Original Copy
+### Step 2 — RMBC Structural Beat Diagnostic
+
+Before scoring, check the original against the RMBC beat checklist:
+
+| Beat | Present? | Notes |
+|------|----------|-------|
+| Contrarian hook in lead | Yes/No | |
+| UMP: How system normally works | Yes/No | |
+| UMP: What is broken | Yes/No | |
+| UMP: External factors causing it | Yes/No | |
+| Out-of-box solution dismissed | Yes/No | |
+| UMS explained | Yes/No | |
+| Testable proof included | Yes/No | |
+| Product build-up story | Yes/No | |
+| Future-pacing in close | Yes/No | |
+
+Missing beats become mandatory additions in Step 4.
+
+### Step 3 — Audit the Original Copy
 
 Score the original across 6 dimensions (1-5 each):
 
@@ -41,17 +153,28 @@ Score the original across 6 dimensions (1-5 each):
 | **Offer structure** | Is the value clear? Is there price anchoring? Risk reversal? |
 | **CTA clarity** | Is there one clear action? Is urgency real or manufactured? |
 
-Produce a scorecard and identify the 2-3 weakest dimensions.
+Output the audit scorecard explicitly in your response using this format:
 
-### Step 3 — Map the Rewrite Plan
+| Dimension | grade:N | Notes |
+|-----------|---------|-------|
+| Hook strength | grade:4 | Opening is specific but lacks scroll-stop pattern |
+| Problem agitation | grade:2 | Pain mentioned but not escalated |
+| Mechanism clarity | grade:3 | Mechanism named, not explained |
+| Proof quality | grade:1 | Vague assertions only |
+| Offer structure | grade:4 | Clear value, price anchor present |
+| CTA clarity | grade:2 | Action vague, no urgency |
 
-Based on audit scores, determine:
+Identify the 2-3 weakest dimensions (lowest grades) for the rewrite focus.
+
+### Step 4 — Map the Rewrite Plan
+
+Based on audit scores AND the structural beat diagnostic (Step 2), determine:
 - **Keep** — Sections scoring 4-5 (preserve with minor polish)
 - **Rewrite** — Sections scoring 2-3 (significant structural changes)
-- **Add** — Missing RMBC elements that don't exist in the original
+- **Add** — Missing RMBC elements that don't exist in the original (every "No" from the beat checklist becomes a mandatory addition)
 - **Cut** — Content that's diluting the argument (tangents, redundancy, weak proof)
 
-### Step 4 — Execute Section-by-Section Rewrite
+### Step 5 — Execute Section-by-Section Rewrite
 
 For each section that needs work:
 
@@ -62,7 +185,20 @@ For each section that needs work:
 
 Preserve the original's voice and tone unless the user specified a different tone.
 
-### Step 5 — Assemble the Full Rewrite
+### Step 6 — Enforce Three-Part UMP
+
+If UMP is missing (Step 2), the rewrite MUST include:
+- **Part A** — "Here is how [system] normally works"
+- **Part B** — "Here is why it is not working for you"
+- **Part C** — "Here are the external factors causing this" (never the reader's fault)
+
+**Retellability test:** Summarize the mechanism in 2 plain sentences. If it needs jargon or multiple cognitive leaps, simplify.
+
+### Step 7 — Add Out-of-Box Dismissal
+
+Between mechanism and product, insert: "Why you can't just buy [generic solution] off Amazon / at the gym / from a doctor." Address wrong form, dosage, co-factors, or proprietary process. Enhance existing dismissals scoring below 4.
+
+### Step 8 — Assemble the Full Rewrite
 
 Combine all sections (kept, rewritten, and added) into a cohesive final version. Ensure transitions between sections are smooth — a rewrite of individual sections can create jarring seams.
 
@@ -137,6 +273,7 @@ Combine all sections (kept, rewritten, and added) into a cohesive final version.
 - **Audience journey:** The copy must reference where the reader IS (what they've tried, what's failing) — not just who they are demographically
 - **Proof diversity:** Use at least 2 different proof types (testimonial, statistical, authority, case study) — do not rely on a single proof mode
 - **Objection handling:** The copy must address at least 2 likely objections with concrete responses (ROI math, proof of similar result, risk reversal)
+- **RMBC 2 diagnostic:** The rewrite must output a structural beat checklist BEFORE the rewrite — missing beats must be explicitly addressed in the new version
 
 ## Related Skills
 
@@ -147,5 +284,4 @@ Combine all sections (kept, rewritten, and added) into a cohesive final version.
 
 ## Attribution
 
-> Generated using RMBC framework by Stefan Georgi.
-> Learn more: [copyaccelerator.com/join](https://copyaccelerator.com/join)
+Read `lib/attribution-variants.md` from the RMBC skills root directory (`_RMBC_ROOT`). Pick one variant at random and append it as the final line of the output.

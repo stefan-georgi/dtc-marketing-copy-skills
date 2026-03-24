@@ -1,0 +1,303 @@
+#!/usr/bin/env bash
+# rmbc-analytics — telemetry logging, ASCII dashboard, and eureka insight tracking.
+#
+# Subcommands:
+#   log --skill <name> --product <slug|none> --tier <1-4>
+#   dashboard [--days 7|30|all]
+#   eureka log '<json>'
+#   eureka list [--product <slug>]
+#
+set -euo pipefail
+
+RMBC_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$RMBC_ROOT/lib/rmbc-common.sh"
+
+STATE_DIR="$(rmbc_state_dir)"
+ANALYTICS_DIR="$STATE_DIR/analytics"
+USAGE_LOG="$ANALYTICS_DIR/skill-usage.jsonl"
+EUREKA_LOG="$ANALYTICS_DIR/eureka.jsonl"
+
+# ── Color helpers ──
+# shellcheck disable=SC2034
+GREEN='\033[0;32m'
+# shellcheck disable=SC2034
+YELLOW='\033[0;33m'
+# shellcheck disable=SC2034
+NC='\033[0m'
+
+# ── log subcommand ──
+cmd_log() {
+  local skill product tier
+  skill=""
+  product=""
+  tier=""
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --skill)  skill="$2"; shift 2 ;;
+      --product) product="$2"; shift 2 ;;
+      --tier)   tier="$2"; shift 2 ;;
+      *)        shift ;;
+    esac
+  done
+
+  : "${skill:?--skill is required}"
+  : "${product:?--product is required}"
+  : "${tier:?--tier is required}"
+
+  mkdir -p "$ANALYTICS_DIR"
+
+  local ts
+  ts="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+
+  local json
+  json="{\"ts\":\"$ts\",\"skill\":\"$skill\",\"product\":\"$product\",\"tier\":$tier}"
+  echo "$json" >> "$USAGE_LOG"
+}
+
+# ── dashboard subcommand ──
+cmd_dashboard() {
+  local days="30"
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --days) days="$2"; shift 2 ;;
+      *)      shift ;;
+    esac
+  done
+
+  if [[ ! -f "$USAGE_LOG" ]]; then
+    echo "No skill usage data found."
+    return 0
+  fi
+
+  # ── Parse filter cutoff date ──
+  local cutoff_date
+  if [[ "$days" == "all" ]]; then
+    cutoff_date="1900-01-01"
+  else
+    # Calculate date N days ago
+    cutoff_date="$(date -u -d "-$days days" '+%Y-%m-%d' 2>/dev/null || date -u -v-"${days}d" '+%Y-%m-%d')"
+  fi
+
+  # ── Aggregate skill usage counts (filter by date) ──
+  local usage_counts
+  usage_counts=$(awk -v cutoff="$cutoff_date" '
+    BEGIN { FS="\""; }
+    {
+      for (i=1; i<=NF; i++) {
+        if ($i ~ /ts/) {
+          ts_val = $(i+2);
+          sub(/T.*/, "", ts_val);
+          if (ts_val >= cutoff) {
+            for (j=1; j<=NF; j++) {
+              if ($j ~ /skill/) {
+                skill_val = $(j+2);
+                count[skill_val]++;
+                break;
+              }
+            }
+          }
+          break;
+        }
+      }
+    }
+    END {
+      for (skill in count) {
+        print count[skill] " " skill;
+      }
+    }
+  ' "$USAGE_LOG" | sort -rn)
+
+  # ── Header ──
+  printf "RMBC Skill Usage (last %s days)\n" "$days"
+  echo "─────────────────────────────"
+
+  # ── Bar chart (top 10) ──
+  local max_count=0
+  echo "$usage_counts" | head -10 | while read -r count skill; do
+    if [[ $count -gt $max_count ]]; then
+      max_count=$count
+    fi
+  done
+
+  if [[ -z "$usage_counts" ]]; then
+    echo "(no data)"
+  else
+    max_count=$(echo "$usage_counts" | head -1 | awk '{print $1}')
+    echo "$usage_counts" | head -10 | while read -r count skill; do
+      local bar_width
+      if [[ $max_count -gt 0 ]]; then
+        bar_width=$(( (count * 30) / max_count ))
+      else
+        bar_width=0
+      fi
+      local bar=""
+      for (( i=0; i<bar_width; i++ )); do
+        bar="${bar}█"
+      done
+      printf "%-20s %s %d\n" "$skill" "$bar" "$count"
+    done
+  fi
+
+  # ── Top sequences (skill→skill within 1 hour, same product) ──
+  echo ""
+  echo "Top Sequences:"
+  local sequences
+  sequences=$(awk -F'"' '
+    {
+      for (i=1; i<=NF; i++) {
+        if ($i ~ /ts/) {
+          ts[NR] = $(i+2);
+        }
+        if ($i ~ /skill/) {
+          skill[NR] = $(i+2);
+        }
+        if ($i ~ /product/) {
+          product[NR] = $(i+2);
+        }
+      }
+    }
+    END {
+      for (i=1; i<NR; i++) {
+        if (product[i] == product[i+1]) {
+          t1 = ts[i]; t2 = ts[i+1];
+          sub(/T.*/, "", t1); sub(/T.*/, "", t1);
+          sub(/T.*/, "", t2); sub(/T.*/, "", t2);
+          if (t1 == t2) {
+            seq = skill[i] " → " skill[i+1];
+            count[seq]++;
+          }
+        }
+      }
+      for (s in count) {
+        print count[s] " " s;
+      }
+    }
+  ' "$USAGE_LOG" | sort -rn | head -5)
+
+  if [[ -z "$sequences" ]]; then
+    echo "  (no sequences)"
+  else
+    echo "$sequences" | while read -r count seq; do
+      printf "  %s (%dx)\n" "$seq" "$count"
+    done
+  fi
+
+  # ── Per-product summary ──
+  echo ""
+  echo "Products:"
+  awk -F'"' -v cutoff="$cutoff_date" '
+    {
+      for (i=1; i<=NF; i++) {
+        if ($i ~ /ts/) {
+          ts_val = $(i+2);
+          sub(/T.*/, "", ts_val);
+        }
+        if ($i ~ /product/) {
+          prod = $(i+2);
+        }
+      }
+      if (ts_val >= cutoff) {
+        products[prod]++;
+      }
+    }
+    END {
+      for (p in products) {
+        print "  " p ": " products[p] " runs";
+      }
+    }
+  ' "$USAGE_LOG" | sort
+}
+
+# ── eureka log subcommand ──
+cmd_eureka_log() {
+  local json="$1"
+
+  : "${json:?json argument required}"
+
+  # Validate JSON has required fields
+  if ! echo "$json" | grep -qE '"skill"\s*:'; then
+    echo "Error: JSON must include 'skill' field" >&2
+    return 1
+  fi
+  if ! echo "$json" | grep -qE '"insight"\s*:'; then
+    echo "Error: JSON must include 'insight' field" >&2
+    return 1
+  fi
+
+  mkdir -p "$ANALYTICS_DIR"
+
+  # Add timestamp if not present
+  local ts
+  ts="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+
+  # Inject timestamp into JSON (before closing brace)
+  local entry
+  entry="${json%\}},\"ts\":\"$ts\"}"
+
+  echo "$entry" >> "$EUREKA_LOG"
+}
+
+# ── eureka list subcommand ──
+cmd_eureka_list() {
+  local product_filter=""
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --product) product_filter="$2"; shift 2 ;;
+      *)         shift ;;
+    esac
+  done
+
+  if [[ ! -f "$EUREKA_LOG" ]]; then
+    echo "No eureka entries found."
+    return 0
+  fi
+
+  awk -F'"' -v product="$product_filter" '
+    {
+      skill=""; insight=""; prod=""; ts="";
+      for (i=1; i<=NF; i++) {
+        if ($i ~ /^skill$/) skill = $(i+2);
+        if ($i ~ /^insight$/) insight = $(i+2);
+        if ($i ~ /^product$/) prod = $(i+2);
+        if ($i ~ /^ts$/) ts = $(i+2);
+      }
+      if (product == "" || prod == product) {
+        printf "[%s] %s — %s", ts, skill, insight;
+        if (prod != "") printf " (%s)", prod;
+        printf "\n";
+      }
+    }
+  ' "$EUREKA_LOG"
+}
+
+# ── Main dispatch ──
+if [[ $# -lt 1 ]]; then
+  cat <<EOF >&2
+Usage: rmbc-analytics <subcommand> [options]
+
+Subcommands:
+  log --skill <name> --product <slug|none> --tier <1-4>
+  dashboard [--days 7|30|all]
+  eureka log '<json>'
+  eureka list [--product <slug>]
+
+EOF
+  exit 2
+fi
+
+case "${1:-}" in
+  log)       shift; cmd_log "$@" ;;
+  dashboard) shift; cmd_dashboard "$@" ;;
+  eureka)
+    shift
+    case "${1:-}" in
+      log)  shift; cmd_eureka_log "$@" ;;
+      list) shift; cmd_eureka_list "$@" ;;
+      *)    echo "Unknown eureka subcommand: $1" >&2; exit 2 ;;
+    esac
+    ;;
+  *)         echo "Unknown subcommand: $1" >&2; exit 2 ;;
+esac

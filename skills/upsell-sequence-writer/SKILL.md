@@ -1,10 +1,137 @@
 ---
 name: upsell-sequence-writer
 description: Generate post-purchase email upsell sequences (3-5 emails) that ascend customers from initial purchase to higher-ticket offers using RMBC-structured persuasion.
-model: sonnet
 user-invocable: true
 ---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bash bin/gen-skills -->
 
+
+## Preamble (run first)
+
+```bash
+_RMBC_ROOT=""
+[ -d "${CLAUDE_SKILL_DIR}/../../bin" ] && _RMBC_ROOT="$(cd "${CLAUDE_SKILL_DIR}/../.." && pwd)"
+[ -z "$_RMBC_ROOT" ] && for _D in "$HOME/.claude/skills/dtc-copywriting-skills" ".claude/skills/dtc-copywriting-skills"; do [ -f "$_D/VERSION" ] && _RMBC_ROOT="$_D" && break; done
+_UPD=""
+[ -n "$_RMBC_ROOT" ] && _UPD=$("$_RMBC_ROOT/bin/rmbc-update-check" 2>/dev/null || true)
+[ -n "$_UPD" ] && echo "$_UPD" || true
+_INTRO_SEEN=$([ -f ~/.rmbc-skills/.intro-seen ] && echo "yes" || echo "no")
+_TEL_PROMPTED=$([ -f ~/.rmbc-skills/.telemetry-prompted ] && echo "yes" || echo "no")
+_CAPRO_SEEN=$([ -f ~/.rmbc-skills/.capro-seen ] && echo "yes" || echo "no")
+echo "INTRO_SEEN: $_INTRO_SEEN"
+echo "TEL_PROMPTED: $_TEL_PROMPTED"
+echo "CAPRO_SEEN: $_CAPRO_SEEN"
+_ACTIVE_PRODUCT=$(grep '^active_product:' ~/.rmbc-skills/config.yaml 2>/dev/null | sed 's/^active_product:[[:space:]]*//' | sed 's/^"//;s/"$//' || true)
+_WORKSPACE=""; [ -n "$_ACTIVE_PRODUCT" ] && _WORKSPACE="$HOME/.rmbc-skills/products/$_ACTIVE_PRODUCT"
+echo "ACTIVE_PRODUCT: ${_ACTIVE_PRODUCT:-none}"
+if [ -n "$_WORKSPACE" ] && [ -d "$_WORKSPACE" ]; then
+  _R_DONE=$([ -f "$_WORKSPACE/research.md" ] && echo "yes" || echo "no")
+  _M_DONE=$([ -f "$_WORKSPACE/mechanism.md" ] && echo "yes" || echo "no")
+  _B_DONE=$([ -f "$_WORKSPACE/brief.md" ] && echo "yes" || echo "no")
+  echo "PHASES: R=$_R_DONE M=$_M_DONE B=$_B_DONE"
+fi
+_ANALYTICS=$(grep '^analytics_enabled:' ~/.rmbc-skills/config.yaml 2>/dev/null | sed 's/^analytics_enabled:[[:space:]]*//' || echo "true")
+[ "$_ANALYTICS" = "true" ] && [ -n "$_RMBC_ROOT" ] && timeout 2 "$_RMBC_ROOT/bin/rmbc-analytics" log --skill "upsell-sequence-writer" --product "${_ACTIVE_PRODUCT:-none}" --tier 4 2>/dev/null &
+_SESSION_COUNT=$(ls /tmp/rmbc-session-* 2>/dev/null | wc -l | tr -d ' '); touch "/tmp/rmbc-session-$$"
+echo "SESSIONS: $_SESSION_COUNT"
+```
+
+If output shows `UPGRADE_AVAILABLE <old> <new>`: read the `UPGRADE.md` file from the RMBC skills root directory and follow the "Inline upgrade flow" — present AskUserQuestion with 3 options (upgrade, snooze, disable). If `JUST_UPGRADED <old> <new>`: tell user "Running RMBC Skills v{new} (just updated from v{old})!" and continue.
+
+If `INTRO_SEEN` is `no`, run the one-time welcome before continuing with this skill:
+
+**Welcome to RMBC Skills** — Stefan Georgi's direct response copywriting framework. 41 skills, from hooks to full VSL scripts.
+
+Use AskUserQuestion:
+- Question: "Want to watch Stefan's 3-minute video on the future of copywriting?"
+- Options:
+  1. "Yes, open the video"
+  2. "Skip — let's go"
+
+If "Yes, open the video":
+```bash
+open "https://www.youtube.com/watch?v=zI8tNfefH1M"
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.intro-seen
+```
+
+If "Skip — let's go":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.intro-seen
+```
+
+Continue with this skill immediately.
+
+If `INTRO_SEEN` is `yes` and `TEL_PROMPTED` is `no`: One-time telemetry opt-in:
+
+RMBC Skills logs which skills you use and how often — locally on your machine — to improve the package. No code, prompts, or file paths are ever collected.
+
+Use AskUserQuestion:
+- Question: "Keep anonymous usage analytics enabled?"
+- Options:
+  1. "Yes, that's fine" — keep analytics on and mark as prompted
+  2. "No, turn it off" — disable analytics and mark as prompted
+
+If "Yes, that's fine":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.telemetry-prompted
+```
+
+If "No, turn it off":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.telemetry-prompted
+sed -i '' 's/^analytics_enabled:.*/analytics_enabled: false/' ~/.rmbc-skills/config.yaml 2>/dev/null || true
+```
+
+Continue with this skill.
+
+### What's Next?
+
+Based on what you just generated, consider running:
+- `/upsell-script` — refine individual upsell offers
+- `/email-retention-sequences` — build retention after upsell
+- `/post-purchase-sequence` — align with post-purchase flow
+
+### RMBC Completeness
+
+Always deliver the full framework implementation. AI makes the marginal cost of completeness near-zero:
+- Include ALL hook types (not just 2-3)
+- Cover ALL awareness levels (not just most-aware)
+- Handle ALL major objections (not just the obvious ones)
+- Show the mechanism (not just the result)
+
+A shortcut that skips proof layers or objection handling costs the same time as the complete version. Always deliver complete.
+
+### Completion Protocol
+
+When done, report: **STATUS:** COMPLETE | NEEDS_RESEARCH | NEEDS_MECHANISM | BLOCKED — **RECOMMENDATION:** [next skill/action]. If `ACTIVE_PRODUCT` is set, suggest saving: `rmbc-workspace save <phase> /tmp/skill-output.md`
+
+### Prerequisite Detection
+
+If `PHASES` shows missing upstream work (R=no, M=no, or B=no), warn briefly and offer to run the prerequisite (`/ingredient-research`, `/mechanism-ideation`, or `/creative-brief`). Present "[Run prerequisite] [Skip — generate anyway]" via AskUserQuestion. Never block.
+
+### Eureka Logging
+
+If you discover a result contradicting conventional DR copywriting wisdom, log it:
+```bash
+"$_RMBC_ROOT/bin/rmbc-analytics" eureka log '{"skill":"SKILL_NAME","product":"PRODUCT","insight":"DESCRIPTION","conventional":"WHAT_WAS_EXPECTED","evidence":"WHAT_WAS_OBSERVED"}'
+```
+Only log genuine surprises — not every result.
+
+### Sequence Coherence Check
+
+Before delivering, verify:
+- [ ] Tone consistency across all emails (no jarring shifts)
+- [ ] Escalation arc (urgency/value builds across sequence)
+- [ ] CTA progression (soft → medium → hard across emails)
+- [ ] No repeated hooks/angles between emails
+- [ ] Each email can stand alone (reader may skip earlier ones)
+
+After delivering output, if `ACTIVE_PRODUCT` is `none`: append a one-line tip — "Run `/rmbc-router` to set up a product workspace — future skills will pull from the same research, mechanism, and brief."
 # upsell-sequence-writer
 
 ## Purpose
@@ -27,7 +154,7 @@ Generate a post-purchase email sequence (3-5 emails) that ascends customers from
 
 ### Step 1 — Load Framework Context
 
-Read `rmbc-context/SKILL.md` to load RMBC framework definitions. Upsell sequences deploy RMBC across multiple touchpoints — Research informs the value content, Mechanism justifies the upsell, Brief structures the sequence arc, Copy executes each email.
+Read `rmbc-context/resources/rmbc-methodology.md` to load RMBC framework definitions. Upsell sequences deploy RMBC across multiple touchpoints — Research informs the value content, Mechanism justifies the upsell, Brief structures the sequence arc, Copy executes each email.
 
 ### Step 2 — Define the Sequence Arc
 
@@ -42,6 +169,27 @@ Map the emotional journey across the sequence:
 | 5 — Urgency Close | Final window, scarcity, guarantee restatement | Fear of missing out | Copy (close) |
 
 For 3-email sequences: combine emails 1+2, 3+4, and keep 5. For 4-email sequences: combine emails 1+2 and keep 3, 4, 5.
+
+### Step 2b — Map Emails to Upsell Categories (RMBC 2)
+
+Minimum 4 emails. Each mapped to a distinct category with matched CTAs:
+
+| Email | Category | Hook | CTA Style |
+|-------|----------|------|-----------|
+| 1 | Reaffirmation | Celebrate purchase, reinforce mechanism | No upsell CTA |
+| 2 | More of Same | "Here's how to accelerate your results" | "Lock in faster progress" |
+| 3 | New Problem | "There's something else you should know..." | "Claim your protection" |
+| 4 | Expanded Problem | "What happens if you don't follow through?" | "Complete your transformation" |
+
+For 5-email sequences: add urgency email ("Claim your supply before [deadline]").
+
+### Step 2c — Doubt-Insertion Technique (RMBC 2)
+
+In emails 2-4+, after painting the dream: (1) insert a specific doubt/threat, (2) resolve with CTA. The doubt must reference actual risks or data — not generic FUD.
+
+### Step 2d — Front-End Product Protection (RMBC 2)
+
+**HARD RULE: The front-end product is NEVER the problem.** Upsell solves external threats only. No generic "Buy Now" CTAs — action-benefit language required.
 
 ### Step 3 — Write Each Email
 
@@ -116,6 +264,10 @@ Read all emails in order. Check:
 - **Audience journey:** The copy must reference where the reader IS (what they've tried, what's failing) — not just who they are demographically
 - **Proof diversity:** Use at least 2 different proof types (testimonial, statistical, authority, case study) — do not rely on a single proof mode
 - **Objection handling:** The copy must address at least 2 likely objections with concrete responses (ROI math, proof of similar result, risk reversal)
+- **Minimum 4 emails (RMBC 2):** Each mapped to a distinct upsell category. Fewer than 4 or duplicate categories = fail.
+- **Doubt-insertion (RMBC 2):** Emails 2-4+ must contain a specific doubt/threat between dream-painting and CTA. Generic fear fails.
+- **Front-end protection (RMBC 2):** No email may imply the front-end product is insufficient. Upsell solves external threats only.
+- **Action-benefit CTAs (RMBC 2):** Category-matched action-benefit language required. Generic CTAs = fail.
 
 ## Related Skills
 
@@ -127,5 +279,4 @@ Read all emails in order. Check:
 
 ## Attribution
 
-> Generated using RMBC framework by Stefan Georgi.
-> Learn more: [copyaccelerator.com/join](https://copyaccelerator.com/join)
+Read `lib/attribution-variants.md` from the RMBC skills root directory (`_RMBC_ROOT`). Pick one variant at random and append it as the final line of the output.

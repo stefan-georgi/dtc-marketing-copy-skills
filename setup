@@ -37,26 +37,50 @@ if [ ! -d "$HOME/.claude" ]; then
 fi
 mkdir -p "$TARGET_DIR"
 
-# Handle existing target
-if [ -e "$TARGET_PATH" ] && [ ! -L "$TARGET_PATH" ]; then
+# Link package root (for bin/, lib/, VERSION resolution)
+# Skip if already cloned directly into the target path
+if [ "$PKG_ROOT" = "$TARGET_PATH" ]; then
+  true  # already in the right place (cloned directly into ~/.claude/skills/)
+elif [ -L "$TARGET_PATH" ]; then
+  EXISTING="$(readlink "$TARGET_PATH")"
+  if [ "$EXISTING" != "$PKG_ROOT" ]; then
+    ln -sfn "$PKG_ROOT" "$TARGET_PATH"
+  fi
+elif [ -e "$TARGET_PATH" ]; then
   echo "Error: $TARGET_PATH exists and is not a symlink."
   echo "If this is a previous copy install, remove it first:"
   echo "  rm -rf $TARGET_PATH"
   echo "Then re-run ./setup"
   exit 1
-fi
-
-if [ -L "$TARGET_PATH" ]; then
-  EXISTING="$(readlink "$TARGET_PATH")"
-  if [ "$EXISTING" = "$PKG_ROOT" ]; then
-    echo "Already linked — nothing to do."
-  else
-    echo "Updating link: $EXISTING -> $PKG_ROOT"
-    ln -sfn "$PKG_ROOT" "$TARGET_PATH"
-  fi
 else
   ln -sfn "$PKG_ROOT" "$TARGET_PATH"
 fi
+
+# Link individual skills into ~/.claude/skills/ for auto-discovery
+# Claude Code discovers skills at ~/.claude/skills/<name>/SKILL.md
+LINKED=0
+SKIPPED=0
+for SKILL_DIR in "$PKG_ROOT/skills"/*/; do
+  [ ! -f "$SKILL_DIR/SKILL.md" ] && continue
+  SKILL_NAME="$(basename "$SKILL_DIR")"
+  SKILL_LINK="$TARGET_DIR/$SKILL_NAME"
+  if [ -L "$SKILL_LINK" ]; then
+    EXISTING_SKILL="$(readlink "$SKILL_LINK")"
+    if [ "$EXISTING_SKILL" = "$SKILL_DIR" ] || [ "$EXISTING_SKILL" = "${SKILL_DIR%/}" ]; then
+      SKIPPED=$((SKIPPED + 1))
+      continue
+    fi
+    ln -sfn "${SKILL_DIR%/}" "$SKILL_LINK"
+  elif [ -e "$SKILL_LINK" ]; then
+    # Regular file/dir exists with same name — skip to avoid conflicts
+    echo "  Skipping $SKILL_NAME — directory already exists (not a symlink)"
+    SKIPPED=$((SKIPPED + 1))
+    continue
+  else
+    ln -sfn "${SKILL_DIR%/}" "$SKILL_LINK"
+  fi
+  LINKED=$((LINKED + 1))
+done
 
 # Create state directory with config defaults
 STATE_DIR="$HOME/.rmbc-skills"
@@ -82,9 +106,11 @@ SKILL_COUNT=$(find "$PKG_ROOT/skills" -maxdepth 2 -name "SKILL.md" -not -path "*
 VERSION=$(cat "$PKG_ROOT/VERSION" 2>/dev/null || echo "unknown")
 
 echo ""
-echo "RMBC Skills v$VERSION linked successfully ($SKILL_COUNT skills)"
-echo "Location: $TARGET_PATH -> $PKG_ROOT"
+echo "RMBC Skills v$VERSION installed ($SKILL_COUNT skills)"
+echo "Package: $TARGET_PATH -> $PKG_ROOT"
+if [ "$LINKED" -gt 0 ]; then
+  echo "Linked $LINKED skills into $TARGET_DIR/"
+fi
+
 echo ""
-echo "Next step: Add this to your CLAUDE.md:"
-echo '  ## RMBC Skills'
-echo '  Use /rmbc-router to access all RMBC copywriting skills.'
+echo "Next: add an RMBC Skills section to your CLAUDE.md (the install prompt handles this)."

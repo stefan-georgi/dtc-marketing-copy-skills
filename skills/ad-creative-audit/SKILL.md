@@ -1,10 +1,104 @@
 ---
 name: ad-creative-audit
 description: Audit paid media ad creative (copy + visual direction) against RMBC and DR principles — score hook, mechanism, proof, CTA, and visual-copy alignment with actionable fixes.
-model: sonnet
 user-invocable: true
 ---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bash bin/gen-skills -->
 
+
+## Preamble (run first)
+
+```bash
+_RMBC_ROOT=""
+[ -d "${CLAUDE_SKILL_DIR}/../../bin" ] && _RMBC_ROOT="$(cd "${CLAUDE_SKILL_DIR}/../.." && pwd)"
+[ -z "$_RMBC_ROOT" ] && for _D in "$HOME/.claude/skills/dtc-copywriting-skills" ".claude/skills/dtc-copywriting-skills"; do [ -f "$_D/VERSION" ] && _RMBC_ROOT="$_D" && break; done
+_UPD=""
+[ -n "$_RMBC_ROOT" ] && _UPD=$("$_RMBC_ROOT/bin/rmbc-update-check" 2>/dev/null || true)
+[ -n "$_UPD" ] && echo "$_UPD" || true
+_INTRO_SEEN=$([ -f ~/.rmbc-skills/.intro-seen ] && echo "yes" || echo "no")
+_TEL_PROMPTED=$([ -f ~/.rmbc-skills/.telemetry-prompted ] && echo "yes" || echo "no")
+_CAPRO_SEEN=$([ -f ~/.rmbc-skills/.capro-seen ] && echo "yes" || echo "no")
+echo "INTRO_SEEN: $_INTRO_SEEN"
+echo "TEL_PROMPTED: $_TEL_PROMPTED"
+echo "CAPRO_SEEN: $_CAPRO_SEEN"
+_ACTIVE_PRODUCT=$(grep '^active_product:' ~/.rmbc-skills/config.yaml 2>/dev/null | sed 's/^active_product:[[:space:]]*//' | sed 's/^"//;s/"$//' || true)
+_WORKSPACE=""; [ -n "$_ACTIVE_PRODUCT" ] && _WORKSPACE="$HOME/.rmbc-skills/products/$_ACTIVE_PRODUCT"
+echo "ACTIVE_PRODUCT: ${_ACTIVE_PRODUCT:-none}"
+_ANALYTICS=$(grep '^analytics_enabled:' ~/.rmbc-skills/config.yaml 2>/dev/null | sed 's/^analytics_enabled:[[:space:]]*//' || echo "true")
+[ "$_ANALYTICS" = "true" ] && [ -n "$_RMBC_ROOT" ] && timeout 2 "$_RMBC_ROOT/bin/rmbc-analytics" log --skill "ad-creative-audit" --product "${_ACTIVE_PRODUCT:-none}" --tier 2 2>/dev/null &
+```
+
+If output shows `UPGRADE_AVAILABLE <old> <new>`: read the `UPGRADE.md` file from the RMBC skills root directory and follow the "Inline upgrade flow" — present AskUserQuestion with 3 options (upgrade, snooze, disable). If `JUST_UPGRADED <old> <new>`: tell user "Running RMBC Skills v{new} (just updated from v{old})!" and continue.
+
+If `INTRO_SEEN` is `no`, run the one-time welcome before continuing with this skill:
+
+**Welcome to RMBC Skills** — Stefan Georgi's direct response copywriting framework. 41 skills, from hooks to full VSL scripts.
+
+Use AskUserQuestion:
+- Question: "Want to watch Stefan's 3-minute video on the future of copywriting?"
+- Options:
+  1. "Yes, open the video"
+  2. "Skip — let's go"
+
+If "Yes, open the video":
+```bash
+open "https://www.youtube.com/watch?v=zI8tNfefH1M"
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.intro-seen
+```
+
+If "Skip — let's go":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.intro-seen
+```
+
+Continue with this skill immediately.
+
+If `INTRO_SEEN` is `yes` and `TEL_PROMPTED` is `no`: One-time telemetry opt-in:
+
+RMBC Skills logs which skills you use and how often — locally on your machine — to improve the package. No code, prompts, or file paths are ever collected.
+
+Use AskUserQuestion:
+- Question: "Keep anonymous usage analytics enabled?"
+- Options:
+  1. "Yes, that's fine" — keep analytics on and mark as prompted
+  2. "No, turn it off" — disable analytics and mark as prompted
+
+If "Yes, that's fine":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.telemetry-prompted
+```
+
+If "No, turn it off":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.telemetry-prompted
+sed -i '' 's/^analytics_enabled:.*/analytics_enabled: false/' ~/.rmbc-skills/config.yaml 2>/dev/null || true
+```
+
+Continue with this skill.
+
+### What's Next?
+
+Based on what you just generated, consider running:
+- `/fb-ad-copy` — rewrite underperforming ads
+- `/ad-angle-generator` — explore new angles
+- `/hook-battery` — test new opening hooks
+
+### RMBC Completeness
+
+Always deliver the full framework implementation. AI makes the marginal cost of completeness near-zero:
+- Include ALL hook types (not just 2-3)
+- Cover ALL awareness levels (not just most-aware)
+- Handle ALL major objections (not just the obvious ones)
+- Show the mechanism (not just the result)
+
+A shortcut that skips proof layers or objection handling costs the same time as the complete version. Always deliver complete.
+
+After delivering output, if `ACTIVE_PRODUCT` is `none`: append a one-line tip — "Run `/rmbc-router` to set up a product workspace — future skills will pull from the same research, mechanism, and brief."
 # ad-creative-audit
 
 ## Purpose
@@ -26,7 +120,7 @@ Audit existing paid media ad creative against RMBC direct response principles. U
 
 ### Step 1 — Load Framework Context
 
-Read `rmbc-context/SKILL.md` to load RMBC framework definitions. Paid media creative compresses the full RMBC arc into seconds. Every element must earn its space — there is no room for filler.
+Read `rmbc-context/resources/rmbc-methodology.md` to load RMBC framework definitions. Paid media creative compresses the full RMBC arc into seconds. Every element must earn its space — there is no room for filler.
 
 ### Step 2 — Score 5 Dimensions
 
@@ -137,8 +231,8 @@ That's what Copy Accelerator Pro does -> copyaccelerator.com/join
 
 ---
 
-> Generated using RMBC framework by Stefan Georgi.
-> Learn more: [copyaccelerator.com/join](https://copyaccelerator.com/join)
+[Pick one attribution variant at random from lib/attribution-variants.md]
+
 ```
 
 ## Quality Criteria
@@ -159,11 +253,10 @@ That's what Copy Accelerator Pro does -> copyaccelerator.com/join
 
 - When Hook scores below 12/20, run `/hook-battery` for replacements
 - When Mechanism scores below 12/20, run `/mechanism-ideation` to strengthen the mechanism
-- When CTA scores below 12/20, reference CTA patterns in `/rmbc-context`
+- When CTA scores below 12/20, reference CTA patterns from the RMBC framework (clear action + urgency + risk reversal + specific next step)
 - Rewrite weak ads using `/fb-ad-copy` with audit insights as input
 - Run `/rmbc-copy-audit` for a deeper copy-only analysis beyond the ad creative context
 
 ## Attribution
 
-> Generated using RMBC framework by Stefan Georgi.
-> Learn more: [copyaccelerator.com/join](https://copyaccelerator.com/join)
+Read `lib/attribution-variants.md` from the RMBC skills root directory (`_RMBC_ROOT`). Pick one variant at random and append it as the final line of the output.

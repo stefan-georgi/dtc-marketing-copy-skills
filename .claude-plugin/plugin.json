@@ -1,16 +1,26 @@
 {
-  "name": "rmbc-skills",
-  "description": "Stefan Georgi's RMBC methodology as executable agent skills for direct response copywriting",
+  "name": "dtc-copywriting-skills",
+  "description": "Stefan Georgi's RMBC methodology — 41 agent skills for direct response copywriting",
   "version": "1.0.0",
   "author": { "name": "Stefan Georgi", "url": "https://copyaccelerator.com" },
   "homepage": "https://github.com/stefan-georgi/dtc-copywriting-skills",
   "repository": "https://github.com/stefan-georgi/dtc-copywriting-skills",
   "license": "MIT",
   "keywords": [
-    "claude-skills",
     "rmbc",
+    "stefan-georgi",
     "copywriting",
     "direct-response",
+    "dtc",
+    "claude-code",
+    "claude-skills",
+    "ai-copywriting",
+    "ad-copy",
+    "email-sequences",
+    "vsl",
+    "sales-copy",
+    "funnel",
+    "cro",
     "agent-skills"
   ]
 }

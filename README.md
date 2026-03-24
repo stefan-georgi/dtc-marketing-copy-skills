@@ -1,10 +1,5 @@
 # RMBC Skills
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Skills: 41](https://img.shields.io/badge/Skills-41-brightgreen.svg)](#skills)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-blueviolet.svg)](https://claude.ai/code)
-[![Agent Skills](https://img.shields.io/badge/Agent%20Skills-Standard-orange.svg)](https://agentskills.io)
-
 Stefan Georgi's RMBC methodology as agent skills.
 
 Works with Claude Code, Claude Desktop, OpenAI, Cursor, Windsurf, and any Agent Skills-compatible platform.
@@ -31,7 +26,7 @@ Every copy-generation skill enforces 5 quality gates that were validated through
 - **Proof diversity** — 2+ proof types required (testimonial, statistical, authority, case study)
 - **Objection handling** — 2+ objections addressed with concrete responses
 
-## Available Skills (42)
+## Available Skills (41)
 
 ### Benchmark-Tested (3 skills)
 
@@ -103,66 +98,31 @@ These don't generate copy. They provide framework context or raw research that f
 | `ingredient-research` | Deep-dives ingredients with clinical studies and claims | Raw research output — no persuasion layer |
 | `unified-research-synthesizer` | Synthesizes multi-source research into actionable briefs | Research synthesis — feeds into copy skills |
 
-## Installation
+## Install — 30 seconds
 
-### Recommended: Git Clone + Setup
+**Requirements:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Git](https://git-scm.com/)
 
-Paste this into Claude Code and it will handle the rest:
+### Step 1: Install on your machine
 
-```
-Clone the RMBC skills repo and run setup:
-git clone https://github.com/stefan-georgi/dtc-copywriting-skills.git
-cd dtc-copywriting-skills && ./setup
-Then add an "RMBC Skills" section to my CLAUDE.md with /rmbc-router as the entry point.
-```
+Open Claude Code and paste this. Claude does the rest.
 
-This symlinks the package into `~/.claude/skills/` so `git pull` auto-updates all skills.
+> Install RMBC Skills: run **`git clone https://github.com/stefan-georgi/dtc-copywriting-skills.git ~/.claude/skills/dtc-copywriting-skills && cd ~/.claude/skills/dtc-copywriting-skills && ./setup`** then add an "RMBC Skills" section to my CLAUDE.md that lists the available skills: /rmbc-router, /ab-test-plan, /ad-angle-generator, /ad-creative-audit, /advertorial-writer, /bonus-stack, /broadcast-email, /cart-abandonment-flow, /checkout-abandonment, /competitor-offer-analysis, /copy-rewrite, /creative-brief, /email-promo, /email-retention-sequences, /fb-ad-copy, /free-offer-brief, /funnel-architecture, /funnel-audit, /guarantee-writer, /hook-battery, /ingredient-research, /lander-copy, /lead-writer, /mechanism-ideation, /media-buying-brief, /offer-stack, /order-form-cro, /pdp-ecomm-template, /post-purchase-sequence, /pricing-strategy, /reengagement-sequence, /rmbc-context, /rmbc-copy-audit, /scarcity-urgency, /soap-opera-sequence, /thank-you-page, /ugc-brief, /unified-research-synthesizer, /upsell-script, /upsell-sequence-writer, /vsl-script, /webinar-registration-copy, /welcome-sequence, and says to use /rmbc-router to discover all skills and set up a product workspace. Then ask the user if they also want to add RMBC Skills to the current project so teammates get it.
 
-### Claude Code Plugin
+This symlinks the package into `~/.claude/skills/` so `git pull` auto-updates all skills. Nothing touches your PATH or runs in the background.
 
-Install as a plugin directly from the CLI or Settings:
+### Step 2: Add to your repo so teammates get it (optional)
 
-```bash
-claude plugins marketplace add https://github.com/stefan-georgi/dtc-copywriting-skills.git
-claude plugins install rmbc-skills
-```
+> Add RMBC Skills to this project: run **`cp -Rf ~/.claude/skills/dtc-copywriting-skills .claude/skills/dtc-copywriting-skills && rm -rf .claude/skills/dtc-copywriting-skills/.git && cd .claude/skills/dtc-copywriting-skills && ./setup`** then add an "RMBC Skills" section to this project's CLAUDE.md that lists the available skills: /rmbc-router, /ab-test-plan, /ad-angle-generator, /ad-creative-audit, /advertorial-writer, /bonus-stack, /broadcast-email, /cart-abandonment-flow, /checkout-abandonment, /competitor-offer-analysis, /copy-rewrite, /creative-brief, /email-promo, /email-retention-sequences, /fb-ad-copy, /free-offer-brief, /funnel-architecture, /funnel-audit, /guarantee-writer, /hook-battery, /ingredient-research, /lander-copy, /lead-writer, /mechanism-ideation, /media-buying-brief, /offer-stack, /order-form-cro, /pdp-ecomm-template, /post-purchase-sequence, /pricing-strategy, /reengagement-sequence, /rmbc-context, /rmbc-copy-audit, /scarcity-urgency, /soap-opera-sequence, /thank-you-page, /ugc-brief, /unified-research-synthesizer, /upsell-script, /upsell-sequence-writer, /vsl-script, /webinar-registration-copy, /welcome-sequence, and says to use /rmbc-router to discover all skills and set up a product workspace. Also tells Claude that if RMBC skills aren't working, run `cd .claude/skills/dtc-copywriting-skills && ./setup` to re-link skills.
 
-Or via Settings → Plugins → Add marketplace → enter `https://github.com/stefan-georgi/dtc-copywriting-skills.git`, then install `rmbc-skills`.
+Real files get committed to your repo (not a submodule), so `git clone` just works.
 
-All 42 skills become available as `/rmbc-skills:<skill-name>` (e.g., `/rmbc-skills:hook-battery`).
+### Other platforms
 
-### npx Install (coming soon)
+**Cursor, Windsurf, or other Agent Skills hosts:** Clone into the platform's skills directory and run `./setup`.
 
-```bash
-npx dtcmarketingskills
-```
+**Claude Desktop (Chat Mode):** Create a Project and paste skill contents into Project Instructions. Always include `rmbc-context` — it's the foundation every other skill references.
 
-Copies skills to `~/.claude/skills/`. Available after npm publish.
-
-### Manual Install
-
-```bash
-git clone https://github.com/stefan-georgi/dtc-copywriting-skills.git
-cp -r dtc-copywriting-skills/skills/* ~/.claude/skills/
-```
-
-### Project-Scoped Install
-
-```bash
-git clone https://github.com/stefan-georgi/dtc-copywriting-skills.git .claude/skills/dtc-copywriting-skills
-```
-
-Skills are available only in this project. Useful for teams that want skills versioned with their repo.
-
-### Fork & Customize
-
-Fork the repo on GitHub, then modify skills for your niche or domain.
-
-### Claude Desktop (Chat Mode)
-
-No Code tab? Create a **Project** and paste skill contents into Project Instructions.
-Always include `rmbc-context` — it's the foundation every other skill references.
-
+**Fork & Customize:** Fork the repo on GitHub, then modify skills for your niche or domain.
 
 ## Usage Examples
 

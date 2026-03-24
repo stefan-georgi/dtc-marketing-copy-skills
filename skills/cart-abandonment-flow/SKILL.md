@@ -1,15 +1,142 @@
 ---
 name: cart-abandonment-flow
-description: Generate a 3-4 email cart abandonment recovery sequence with escalating urgency — from gentle reminder to final scarcity close using RMBC principles.
-model: sonnet
+description: Generate a 3-5 email cart abandonment recovery sequence with escalating urgency — from gentle reminder to final scarcity close using RMBC principles.
 user-invocable: true
 ---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bash bin/gen-skills -->
 
+
+## Preamble (run first)
+
+```bash
+_RMBC_ROOT=""
+[ -d "${CLAUDE_SKILL_DIR}/../../bin" ] && _RMBC_ROOT="$(cd "${CLAUDE_SKILL_DIR}/../.." && pwd)"
+[ -z "$_RMBC_ROOT" ] && for _D in "$HOME/.claude/skills/dtc-copywriting-skills" ".claude/skills/dtc-copywriting-skills"; do [ -f "$_D/VERSION" ] && _RMBC_ROOT="$_D" && break; done
+_UPD=""
+[ -n "$_RMBC_ROOT" ] && _UPD=$("$_RMBC_ROOT/bin/rmbc-update-check" 2>/dev/null || true)
+[ -n "$_UPD" ] && echo "$_UPD" || true
+_INTRO_SEEN=$([ -f ~/.rmbc-skills/.intro-seen ] && echo "yes" || echo "no")
+_TEL_PROMPTED=$([ -f ~/.rmbc-skills/.telemetry-prompted ] && echo "yes" || echo "no")
+_CAPRO_SEEN=$([ -f ~/.rmbc-skills/.capro-seen ] && echo "yes" || echo "no")
+echo "INTRO_SEEN: $_INTRO_SEEN"
+echo "TEL_PROMPTED: $_TEL_PROMPTED"
+echo "CAPRO_SEEN: $_CAPRO_SEEN"
+_ACTIVE_PRODUCT=$(grep '^active_product:' ~/.rmbc-skills/config.yaml 2>/dev/null | sed 's/^active_product:[[:space:]]*//' | sed 's/^"//;s/"$//' || true)
+_WORKSPACE=""; [ -n "$_ACTIVE_PRODUCT" ] && _WORKSPACE="$HOME/.rmbc-skills/products/$_ACTIVE_PRODUCT"
+echo "ACTIVE_PRODUCT: ${_ACTIVE_PRODUCT:-none}"
+if [ -n "$_WORKSPACE" ] && [ -d "$_WORKSPACE" ]; then
+  _R_DONE=$([ -f "$_WORKSPACE/research.md" ] && echo "yes" || echo "no")
+  _M_DONE=$([ -f "$_WORKSPACE/mechanism.md" ] && echo "yes" || echo "no")
+  _B_DONE=$([ -f "$_WORKSPACE/brief.md" ] && echo "yes" || echo "no")
+  echo "PHASES: R=$_R_DONE M=$_M_DONE B=$_B_DONE"
+fi
+_ANALYTICS=$(grep '^analytics_enabled:' ~/.rmbc-skills/config.yaml 2>/dev/null | sed 's/^analytics_enabled:[[:space:]]*//' || echo "true")
+[ "$_ANALYTICS" = "true" ] && [ -n "$_RMBC_ROOT" ] && timeout 2 "$_RMBC_ROOT/bin/rmbc-analytics" log --skill "cart-abandonment-flow" --product "${_ACTIVE_PRODUCT:-none}" --tier 4 2>/dev/null &
+_SESSION_COUNT=$(ls /tmp/rmbc-session-* 2>/dev/null | wc -l | tr -d ' '); touch "/tmp/rmbc-session-$$"
+echo "SESSIONS: $_SESSION_COUNT"
+```
+
+If output shows `UPGRADE_AVAILABLE <old> <new>`: read the `UPGRADE.md` file from the RMBC skills root directory and follow the "Inline upgrade flow" — present AskUserQuestion with 3 options (upgrade, snooze, disable). If `JUST_UPGRADED <old> <new>`: tell user "Running RMBC Skills v{new} (just updated from v{old})!" and continue.
+
+If `INTRO_SEEN` is `no`, run the one-time welcome before continuing with this skill:
+
+**Welcome to RMBC Skills** — Stefan Georgi's direct response copywriting framework. 41 skills, from hooks to full VSL scripts.
+
+Use AskUserQuestion:
+- Question: "Want to watch Stefan's 3-minute video on the future of copywriting?"
+- Options:
+  1. "Yes, open the video"
+  2. "Skip — let's go"
+
+If "Yes, open the video":
+```bash
+open "https://www.youtube.com/watch?v=zI8tNfefH1M"
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.intro-seen
+```
+
+If "Skip — let's go":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.intro-seen
+```
+
+Continue with this skill immediately.
+
+If `INTRO_SEEN` is `yes` and `TEL_PROMPTED` is `no`: One-time telemetry opt-in:
+
+RMBC Skills logs which skills you use and how often — locally on your machine — to improve the package. No code, prompts, or file paths are ever collected.
+
+Use AskUserQuestion:
+- Question: "Keep anonymous usage analytics enabled?"
+- Options:
+  1. "Yes, that's fine" — keep analytics on and mark as prompted
+  2. "No, turn it off" — disable analytics and mark as prompted
+
+If "Yes, that's fine":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.telemetry-prompted
+```
+
+If "No, turn it off":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.telemetry-prompted
+sed -i '' 's/^analytics_enabled:.*/analytics_enabled: false/' ~/.rmbc-skills/config.yaml 2>/dev/null || true
+```
+
+Continue with this skill.
+
+### What's Next?
+
+Based on what you just generated, consider running:
+- `/checkout-abandonment` — optimize checkout page
+- `/scarcity-urgency` — add urgency to recovery emails
+- `/email-promo` — promotional recovery offer
+
+### RMBC Completeness
+
+Always deliver the full framework implementation. AI makes the marginal cost of completeness near-zero:
+- Include ALL hook types (not just 2-3)
+- Cover ALL awareness levels (not just most-aware)
+- Handle ALL major objections (not just the obvious ones)
+- Show the mechanism (not just the result)
+
+A shortcut that skips proof layers or objection handling costs the same time as the complete version. Always deliver complete.
+
+### Completion Protocol
+
+When done, report: **STATUS:** COMPLETE | NEEDS_RESEARCH | NEEDS_MECHANISM | BLOCKED — **RECOMMENDATION:** [next skill/action]. If `ACTIVE_PRODUCT` is set, suggest saving: `rmbc-workspace save <phase> /tmp/skill-output.md`
+
+### Prerequisite Detection
+
+If `PHASES` shows missing upstream work (R=no, M=no, or B=no), warn briefly and offer to run the prerequisite (`/ingredient-research`, `/mechanism-ideation`, or `/creative-brief`). Present "[Run prerequisite] [Skip — generate anyway]" via AskUserQuestion. Never block.
+
+### Eureka Logging
+
+If you discover a result contradicting conventional DR copywriting wisdom, log it:
+```bash
+"$_RMBC_ROOT/bin/rmbc-analytics" eureka log '{"skill":"SKILL_NAME","product":"PRODUCT","insight":"DESCRIPTION","conventional":"WHAT_WAS_EXPECTED","evidence":"WHAT_WAS_OBSERVED"}'
+```
+Only log genuine surprises — not every result.
+
+### Sequence Coherence Check
+
+Before delivering, verify:
+- [ ] Tone consistency across all emails (no jarring shifts)
+- [ ] Escalation arc (urgency/value builds across sequence)
+- [ ] CTA progression (soft → medium → hard across emails)
+- [ ] No repeated hooks/angles between emails
+- [ ] Each email can stand alone (reader may skip earlier ones)
+
+After delivering output, if `ACTIVE_PRODUCT` is `none`: append a one-line tip — "Run `/rmbc-router` to set up a product workspace — future skills will pull from the same research, mechanism, and brief."
 # cart-abandonment-flow
 
 ## Purpose
 
-Generate a cart abandonment email sequence (3-4 emails) that recovers lost sales from shoppers who added to cart but did not complete checkout. Cart abandoners are the highest-intent non-buyers in your funnel — they wanted the product enough to add it. Something stopped them: price doubt, distraction, shipping concern, or comparison shopping. Each email addresses a different recovery angle with escalating urgency. RMBC applies as objection architecture: Research identifies why they left, Mechanism reinforces why this product is the right choice, Brief escalates the urgency arc, Copy recovers the sale.
+Generate a cart abandonment email sequence (3-5 emails) that recovers lost sales from shoppers who added to cart but did not complete checkout. Cart abandoners are the highest-intent non-buyers in your funnel — they wanted the product enough to add it. Something stopped them: price doubt, distraction, shipping concern, or comparison shopping. Each email addresses a different recovery angle with escalating urgency. RMBC applies as objection architecture: Research identifies why they left, Mechanism reinforces why this product is the right choice, Brief escalates the urgency arc, Copy recovers the sale.
 
 ## Inputs
 
@@ -21,13 +148,13 @@ Generate a cart abandonment email sequence (3-4 emails) that recovers lost sales
 | `guarantee` | Yes | Money-back guarantee, return policy, or risk reversal offer |
 | `shipping_info` | Yes | Shipping cost, free shipping threshold, or delivery timeline |
 | `discount_offer` | No | Discount or incentive for completing purchase (e.g., 10% off, free gift) |
-| `sequence_length` | No | Number of emails: 3 or 4 (default: 4) |
+| `sequence_length` | No | Number of emails: 3, 4, or 5 (default: 4) |
 
 ## Execution Protocol
 
 ### Step 1 — Load Framework Context
 
-Read `rmbc-context/SKILL.md` to load RMBC framework definitions. Cart abandonment sequences invert typical RMBC — the prospect already wants the product. The job is removing friction, not building desire. Mechanism reinforces their original interest. Proof handles objections. CTA removes the final barrier.
+Read `rmbc-context/resources/rmbc-methodology.md` to load RMBC framework definitions. Cart abandonment sequences invert typical RMBC — the prospect already wants the product. The job is removing friction, not building desire. Mechanism reinforces their original interest. Proof handles objections. CTA removes the final barrier.
 
 ### Step 2 — Map the Recovery Arc
 
@@ -38,7 +165,7 @@ Read `rmbc-context/SKILL.md` to load RMBC framework definitions. Cart abandonmen
 | 3 — Objection Handling | 48 hours | Remove barriers — address price, shipping, quality | Name the top objection directly. Deploy guarantee. Answer FAQ. |
 | 4 — Scarcity/Final Offer | 72 hours | Last chance — urgency + sweetener | Stock warning, discount (if applicable), deadline. Final CTA. |
 
-For 3-email sequences: combine emails 2+3 (social proof + objection handling in one email).
+For 3-email sequences: combine emails 2+3 (social proof + objection handling in one email). For 5-email sequences: add a proof-stacking email between email 3 and email 4 — featuring testimonials, case studies, or user-generated results that build final-purchase confidence before the scarcity close.
 
 ### Step 3 — Identify the Abandonment Objections
 
@@ -86,7 +213,7 @@ If any gap exists, revise.
 ## Cart Abandonment Flow: [Product Name]
 
 **Product:** [product name] — $[price]
-**Sequence Length:** [3-4] emails
+**Sequence Length:** [3-5] emails
 **Send Schedule:** 1h → 24h → 48h → 72h
 **Audience:** [target audience summary]
 **Primary Objection:** [identified objection for this price point]
@@ -146,5 +273,4 @@ If any gap exists, revise.
 
 ## Attribution
 
-> Generated using RMBC framework by Stefan Georgi.
-> Learn more: [copyaccelerator.com/join](https://copyaccelerator.com/join)
+Read `lib/attribution-variants.md` from the RMBC skills root directory (`_RMBC_ROOT`). Pick one variant at random and append it as the final line of the output.

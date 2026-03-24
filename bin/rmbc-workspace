@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+# rmbc-workspace — Product workspace management for RMBC skills.
+#
+# Subcommands:
+#   active <slug|name>  Set active product (auto-creates workspace if missing)
+#   save <phase> <file> Save skill output to active workspace
+#   status              Show all workspaces with RMBC phase completion
+set -euo pipefail
+
+RMBC_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$RMBC_ROOT/lib/rmbc-common.sh"
+
+usage() {
+  cat << 'EOF'
+Usage: rmbc-workspace <command> [args]
+
+Commands:
+  active <slug|name>   Set active product (auto-creates workspace)
+  save <phase> <file>  Save file to active workspace (phase: research|mechanism|brief|asset)
+  status               Show all workspaces with RMBC phase completion
+EOF
+  exit 1
+}
+
+cmd_active() {
+  local input="$*"
+  [ -z "$input" ] && { echo "Error: product name or slug required"; exit 1; }
+
+  local slug
+  slug=$(rmbc_slugify "$input")
+  local product_dir
+  product_dir=$(rmbc_product_dir "$slug")
+
+  if [ ! -d "$product_dir" ]; then
+    mkdir -p "$product_dir/assets"
+    cat > "$product_dir/meta.json" << METAEOF
+{
+  "name": "$input",
+  "slug": "$slug",
+  "created": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+METAEOF
+    echo "Created workspace: $slug"
+  fi
+
+  rmbc_config_set active_product "$slug"
+  echo "Active product: $slug"
+  echo "Workspace: $product_dir"
+}
+
+cmd_save() {
+  local phase="${1:-}"
+  local file="${2:-}"
+  [ -z "$phase" ] || [ -z "$file" ] && { echo "Error: usage: rmbc-workspace save <phase> <file>"; exit 1; }
+
+  local slug
+  slug=$(rmbc_active_product)
+  [ -z "$slug" ] && { echo "Error: no active product. Run: rmbc-workspace active <name>"; exit 1; }
+
+  local product_dir
+  product_dir=$(rmbc_product_dir "$slug")
+  [ ! -d "$product_dir" ] && { echo "Error: workspace not found: $slug"; exit 1; }
+  [ ! -f "$file" ] && { echo "Error: file not found: $file"; exit 1; }
+
+  case "$phase" in
+    research)  cp "$file" "$product_dir/research.md" ;;
+    mechanism) cp "$file" "$product_dir/mechanism.md" ;;
+    brief)     cp "$file" "$product_dir/brief.md" ;;
+    asset)
+      local basename
+      basename=$(basename "$file")
+      local datestamp
+      datestamp=$(date +%Y-%m-%d)
+      local dest="$product_dir/assets/${basename%.md}-${datestamp}.md"
+      cp "$file" "$dest"
+      echo "Saved asset: $dest"
+      return
+      ;;
+    *) echo "Error: phase must be research|mechanism|brief|asset"; exit 1 ;;
+  esac
+  echo "Saved $phase phase to $product_dir/$phase.md"
+}
+
+cmd_status() {
+  local products_dir="$_RMBC_STATE_DIR/products"
+  local active
+  active=$(rmbc_active_product)
+
+  if [ ! -d "$products_dir" ] || [ -z "$(ls -A "$products_dir" 2>/dev/null)" ]; then
+    echo "No workspaces found. Create one with: rmbc-workspace active <product-name>"
+    return
+  fi
+
+  echo "RMBC Workspaces"
+  echo "═══════════════════════════════════════"
+
+  for dir in "$products_dir"/*/; do
+    [ ! -d "$dir" ] && continue
+    local slug
+    slug=$(basename "$dir")
+    local marker=" "
+    [ "$slug" = "$active" ] && marker="*"
+
+    local r="○" m="○" b="○"
+    [ -f "$dir/research.md" ] && r="✓"
+    [ -f "$dir/mechanism.md" ] && m="✓"
+    [ -f "$dir/brief.md" ] && b="✓"
+
+    local asset_count=0
+    if [ -d "$dir/assets" ]; then
+      asset_count=$(ls -1 "$dir/assets/" 2>/dev/null | wc -l | tr -d ' ')
+    fi
+
+    printf " %s %-25s R:%s  M:%s  B:%s  C:%s assets\n" "$marker" "$slug" "$r" "$m" "$b" "$asset_count"
+  done
+
+  echo ""
+  echo "* = active product"
+}
+
+[ $# -lt 1 ] && usage
+
+case "$1" in
+  active) shift; cmd_active "$@" ;;
+  save)   shift; cmd_save "$@" ;;
+  status) cmd_status ;;
+  *)      usage ;;
+esac

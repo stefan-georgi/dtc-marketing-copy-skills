@@ -1,10 +1,104 @@
 ---
 name: thank-you-page
 description: Generate RMBC-structured thank you / order confirmation page copy — the highest-converting upsell real estate where buyer trust peaks and post-purchase momentum drives action.
-model: sonnet
 user-invocable: true
 ---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bash bin/gen-skills -->
 
+
+## Preamble (run first)
+
+```bash
+_RMBC_ROOT=""
+[ -d "${CLAUDE_SKILL_DIR}/../../bin" ] && _RMBC_ROOT="$(cd "${CLAUDE_SKILL_DIR}/../.." && pwd)"
+[ -z "$_RMBC_ROOT" ] && for _D in "$HOME/.claude/skills/dtc-copywriting-skills" ".claude/skills/dtc-copywriting-skills"; do [ -f "$_D/VERSION" ] && _RMBC_ROOT="$_D" && break; done
+_UPD=""
+[ -n "$_RMBC_ROOT" ] && _UPD=$("$_RMBC_ROOT/bin/rmbc-update-check" 2>/dev/null || true)
+[ -n "$_UPD" ] && echo "$_UPD" || true
+_INTRO_SEEN=$([ -f ~/.rmbc-skills/.intro-seen ] && echo "yes" || echo "no")
+_TEL_PROMPTED=$([ -f ~/.rmbc-skills/.telemetry-prompted ] && echo "yes" || echo "no")
+_CAPRO_SEEN=$([ -f ~/.rmbc-skills/.capro-seen ] && echo "yes" || echo "no")
+echo "INTRO_SEEN: $_INTRO_SEEN"
+echo "TEL_PROMPTED: $_TEL_PROMPTED"
+echo "CAPRO_SEEN: $_CAPRO_SEEN"
+_ACTIVE_PRODUCT=$(grep '^active_product:' ~/.rmbc-skills/config.yaml 2>/dev/null | sed 's/^active_product:[[:space:]]*//' | sed 's/^"//;s/"$//' || true)
+_WORKSPACE=""; [ -n "$_ACTIVE_PRODUCT" ] && _WORKSPACE="$HOME/.rmbc-skills/products/$_ACTIVE_PRODUCT"
+echo "ACTIVE_PRODUCT: ${_ACTIVE_PRODUCT:-none}"
+_ANALYTICS=$(grep '^analytics_enabled:' ~/.rmbc-skills/config.yaml 2>/dev/null | sed 's/^analytics_enabled:[[:space:]]*//' || echo "true")
+[ "$_ANALYTICS" = "true" ] && [ -n "$_RMBC_ROOT" ] && timeout 2 "$_RMBC_ROOT/bin/rmbc-analytics" log --skill "thank-you-page" --product "${_ACTIVE_PRODUCT:-none}" --tier 2 2>/dev/null &
+```
+
+If output shows `UPGRADE_AVAILABLE <old> <new>`: read the `UPGRADE.md` file from the RMBC skills root directory and follow the "Inline upgrade flow" — present AskUserQuestion with 3 options (upgrade, snooze, disable). If `JUST_UPGRADED <old> <new>`: tell user "Running RMBC Skills v{new} (just updated from v{old})!" and continue.
+
+If `INTRO_SEEN` is `no`, run the one-time welcome before continuing with this skill:
+
+**Welcome to RMBC Skills** — Stefan Georgi's direct response copywriting framework. 41 skills, from hooks to full VSL scripts.
+
+Use AskUserQuestion:
+- Question: "Want to watch Stefan's 3-minute video on the future of copywriting?"
+- Options:
+  1. "Yes, open the video"
+  2. "Skip — let's go"
+
+If "Yes, open the video":
+```bash
+open "https://www.youtube.com/watch?v=zI8tNfefH1M"
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.intro-seen
+```
+
+If "Skip — let's go":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.intro-seen
+```
+
+Continue with this skill immediately.
+
+If `INTRO_SEEN` is `yes` and `TEL_PROMPTED` is `no`: One-time telemetry opt-in:
+
+RMBC Skills logs which skills you use and how often — locally on your machine — to improve the package. No code, prompts, or file paths are ever collected.
+
+Use AskUserQuestion:
+- Question: "Keep anonymous usage analytics enabled?"
+- Options:
+  1. "Yes, that's fine" — keep analytics on and mark as prompted
+  2. "No, turn it off" — disable analytics and mark as prompted
+
+If "Yes, that's fine":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.telemetry-prompted
+```
+
+If "No, turn it off":
+```bash
+mkdir -p ~/.rmbc-skills
+touch ~/.rmbc-skills/.telemetry-prompted
+sed -i '' 's/^analytics_enabled:.*/analytics_enabled: false/' ~/.rmbc-skills/config.yaml 2>/dev/null || true
+```
+
+Continue with this skill.
+
+### What's Next?
+
+Based on what you just generated, consider running:
+- `/upsell-script` — add post-purchase upsell
+- `/post-purchase-sequence` — build follow-up emails
+- `/welcome-sequence` — start onboarding
+
+### RMBC Completeness
+
+Always deliver the full framework implementation. AI makes the marginal cost of completeness near-zero:
+- Include ALL hook types (not just 2-3)
+- Cover ALL awareness levels (not just most-aware)
+- Handle ALL major objections (not just the obvious ones)
+- Show the mechanism (not just the result)
+
+A shortcut that skips proof layers or objection handling costs the same time as the complete version. Always deliver complete.
+
+After delivering output, if `ACTIVE_PRODUCT` is `none`: append a one-line tip — "Run `/rmbc-router` to set up a product workspace — future skills will pull from the same research, mechanism, and brief."
 # thank-you-page
 
 ## Purpose
@@ -24,7 +118,7 @@ Generate complete thank you / order confirmation page copy structured around RMB
 
 ### Step 1 — Load Framework Context
 
-Read `rmbc-context/SKILL.md` to load RMBC framework definitions. Thank you pages apply RMBC in post-purchase mode — Research validates what buyers need to hear after committing, Mechanism reinforces why their purchase decision was smart, Brief structures the page for both confirmation and conversion, Copy executes with warmth first, sell second.
+Read `rmbc-context/resources/rmbc-methodology.md` to load RMBC framework definitions. Thank you pages apply RMBC in post-purchase mode — Research validates what buyers need to hear after committing, Mechanism reinforces why their purchase decision was smart, Brief structures the page for both confirmation and conversion, Copy executes with warmth first, sell second.
 
 ### Step 2 — Map Post-Purchase Psychology
 
@@ -38,11 +132,23 @@ The buyer is in a unique emotional state. Map the psychology driving this page:
 
 ### Step 3 — Write the Thank You Page
 
-#### Section 1: Order Confirmation (3-5 sentences)
+#### Section 1: Order Confirmation with Warm Tone (3-5 sentences)
 - Confirm the order with specifics (product name, order number placeholder)
 - Express genuine gratitude — not generic "thanks for your order"
 - Reinforce the outcome they're about to experience
 - Include a receipt summary block (product, price, order number, email confirmation note)
+- **Tone shift:** Write as a friend congratulating them, not a corporation processing a transaction. Use warm, direct language: "Hey, you still there? You just did something amazing." Not: "Thank you for your purchase. Your order has been confirmed."
+
+#### Section 1B: Four-Dimensional Future-Pacing
+
+Immediately after confirmation, paint the transformation across all four dimensions:
+
+- **Physical:** "Imagine waking up and [specific physical benefit]..."
+- **Emotional:** "That nagging worry about [problem] starts to fade..."
+- **Social:** "Picture the look on [person]'s face when they notice [visible change]..."
+- **Psychological:** "The voice that told you nothing would work? It goes quiet..."
+
+All four are mandatory. Each must use specific, vivid language tied to the product's promise -- no generic statements.
 
 #### Section 2: What Happens Next (3-5 bullet points)
 - Step-by-step: what they should expect and when
@@ -56,14 +162,25 @@ The buyer is in a unique emotional state. Map the psychology driving this page:
 - Frame it as a reward for being a customer — "Because you just joined..."
 - This section builds goodwill before any upsell attempt
 
-#### Section 4: Upsell Offer (if `upsell_product` provided)
+#### Section 4: Upsell Offer with Crossroads Close (if `upsell_product` provided)
 - Transition: "One more thing before you go..."
-- Connect the upsell directly to maximizing results from what they just bought
-- Keep it to 3-5 sentences — they already bought; don't oversell
-- Single CTA button: "Add [Product] To My Order"
-- If no upsell_product provided, skip this section entirely
+- **Crossroads close** before CTA -- two contrasting paths:
+  - **Stopping here:** "You could stop here -- [product] will [deliver core promise]."
+  - **Continuing:** "But if you want [accelerated outcome], there's one more step..."
+- Frame as continuation of transformation, NEVER correction of purchase. The upsell accelerates or protects results.
+- 3-5 sentences after crossroads. Single CTA: "Add [Product] To My Order"
+- Skip if no upsell_product provided
 
-#### Section 5: Social Share Prompt (2-3 sentences)
+#### Section 5: Social Proof Bombardment
+
+After the upsell CTA (or after bonus if no upsell), include 3-5 proof elements:
+- Short testimonial quotes (1-2 sentences each)
+- Specific metrics: "[X] customers served," "[Y]% report [outcome] within [timeframe]"
+- UGC references or expert endorsements
+
+Reduces buyer's remorse and provides indirect social proof for any upsell.
+
+#### Section 6: Social Share Prompt (2-3 sentences)
 - Ask them to share their purchase or excitement on social media
 - Provide a pre-written share template they can copy
 - Optional: incentive for sharing (discount code for next purchase, bonus content)
@@ -88,13 +205,22 @@ Include 1-2 elements that drive immediate product consumption:
 
 ### ORDER CONFIRMED
 
-[3-5 sentences — confirmation + gratitude + outcome reinforcement]
+[3-5 sentences — warm confirmation + gratitude + outcome reinforcement]
 
 **Order Summary:**
 - Product: [name]
 - Price: $XX
 - Order #: [placeholder]
 - Confirmation email sent to: [your email]
+
+---
+
+### YOUR TRANSFORMATION STARTS NOW
+
+**Physical:** [1-2 sentences — vivid physical benefit]
+**Emotional:** [1-2 sentences — inner state shift]
+**Social:** [1-2 sentences — how others notice]
+**Psychological:** [1-2 sentences — belief/identity change]
 
 ---
 
@@ -114,9 +240,17 @@ Include 1-2 elements that drive immediate product consumption:
 
 ### [UPSELL SECTION — if applicable]
 
-[3-5 sentences — complementary offer]
+**You could stop here...** [1-2 sentences — baseline result acknowledgment]
+
+**But if you want more...** [2-3 sentences — crossroads close + upsell offer]
 
 **[CTA BUTTON]:** "Add [Product] To My Order — Just $XX"
+
+---
+
+### PROOF IT WORKS
+
+[3-5 testimonial/proof elements reinforcing purchase decision]
 
 ---
 
@@ -148,6 +282,7 @@ Include 1-2 elements that drive immediate product consumption:
 - **Audience journey:** The copy must reference where the reader IS (what they've tried, what's failing) — not just who they are demographically
 - **Proof diversity:** Use at least 2 different proof types (testimonial, statistical, authority, case study) — do not rely on a single proof mode
 - **Objection handling:** The copy must address at least 2 likely objections with concrete responses (ROI math, proof of similar result, risk reversal)
+- **RMBC 2 future-pacing:** Must include all four dimensions (physical, emotional, social, psychological) in the post-purchase reinforcement section
 
 ## Related Skills
 
@@ -159,5 +294,4 @@ Include 1-2 elements that drive immediate product consumption:
 
 ## Attribution
 
-> Generated using RMBC framework by Stefan Georgi.
-> Learn more: [copyaccelerator.com/join](https://copyaccelerator.com/join)
+Read `lib/attribution-variants.md` from the RMBC skills root directory (`_RMBC_ROOT`). Pick one variant at random and append it as the final line of the output.
