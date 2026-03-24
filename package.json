@@ -1,27 +1,37 @@
 {
-  "name": "copywritingskills-rmbc",
+  "name": "dtcmarketingskills",
   "version": "1.0.0",
-  "description": "Stefan Georgi's RMBC methodology as agent skills for Claude Code, Claude Desktop, OpenAI, and any Agent Skills-compatible platform.",
+  "description": "Stefan Georgi's RMBC methodology — 41 agent skills for direct response copywriting. Works with Claude Code, Claude Desktop, and any Agent Skills-compatible platform.",
+  "bin": {
+    "dtcmarketingskills": "./bin/install.mjs"
+  },
   "keywords": [
-    "claude-skills",
     "rmbc",
+    "stefan-georgi",
     "copywriting",
     "direct-response",
+    "dtc",
+    "claude-code",
+    "claude-skills",
+    "ai-copywriting",
+    "ad-copy",
+    "email-sequences",
+    "vsl",
+    "sales-copy",
+    "funnel",
+    "cro",
+    "ecommerce",
+    "facebook-ads",
+    "landing-page",
+    "offer-stack",
+    "copy-audit",
     "agent-skills"
   ],
-  "homepage": "https://github.com/StefanGeorgi/copywritingskills-rmbc",
+  "homepage": "https://github.com/stefan-georgi/dtc-copywriting-skills",
   "license": "MIT",
   "author": "Stefan Georgi",
   "repository": {
     "type": "git",
-    "url": "https://github.com/StefanGeorgi/copywritingskills-rmbc.git"
-  },
-  "skills": {
-    "directory": "skills",
-    "count": 41
-  },
-  "skillkit": {
-    "skills_dir": "./skills",
-    "openai_dir": "./openai"
+    "url": "https://github.com/stefan-georgi/dtc-copywriting-skills.git"
   }
 }

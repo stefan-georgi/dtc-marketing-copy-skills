@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# RMBC Skills — Setup
+# Symlinks this package into ~/.claude/skills/ so skills resolve automatically.
+# Idempotent: safe to run multiple times.
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PKG_ROOT="$SCRIPT_DIR"
+
+# Detect package root — handle both repo layouts
+# Layout A (main branch): rmbc-skills/skills/, rmbc-skills/bin/
+# Layout B (public branch): skills/, bin/ at repo root
+if [ ! -d "$PKG_ROOT/skills" ]; then
+  echo "Error: skills/ directory not found at $PKG_ROOT"
+  echo "Run this script from the package root directory."
+  exit 1
+fi
+
+# Verify bin/ executables exist
+if [ ! -f "$PKG_ROOT/bin/rmbc-update-check" ] || [ ! -f "$PKG_ROOT/bin/rmbc-analytics" ]; then
+  echo "Warning: bin/rmbc-update-check or bin/rmbc-analytics not found."
+  echo "Some features (update checking, analytics) will not work."
+  echo "If you downloaded a zip archive, clone the repo instead for full functionality:"
+  echo "  git clone https://github.com/stefan-georgi/dtc-copywriting-skills.git"
+  echo ""
+fi
+
+TARGET_DIR="$HOME/.claude/skills"
+TARGET_NAME="dtc-copywriting-skills"
+TARGET_PATH="$TARGET_DIR/$TARGET_NAME"
+
+# Create skills directory if missing
+if [ ! -d "$HOME/.claude" ]; then
+  echo "Warning: ~/.claude/ does not exist. Creating it."
+  echo "Make sure Claude Code is installed."
+fi
+mkdir -p "$TARGET_DIR"
+
+# Handle existing target
+if [ -e "$TARGET_PATH" ] && [ ! -L "$TARGET_PATH" ]; then
+  echo "Error: $TARGET_PATH exists and is not a symlink."
+  echo "If this is a previous copy install, remove it first:"
+  echo "  rm -rf $TARGET_PATH"
+  echo "Then re-run ./setup"
+  exit 1
+fi
+
+if [ -L "$TARGET_PATH" ]; then
+  EXISTING="$(readlink "$TARGET_PATH")"
+  if [ "$EXISTING" = "$PKG_ROOT" ]; then
+    echo "Already linked — nothing to do."
+  else
+    echo "Updating link: $EXISTING -> $PKG_ROOT"
+    ln -sfn "$PKG_ROOT" "$TARGET_PATH"
+  fi
+else
+  ln -sfn "$PKG_ROOT" "$TARGET_PATH"
+fi
+
+# Create state directory with config defaults
+STATE_DIR="$HOME/.rmbc-skills"
+mkdir -p "$STATE_DIR"
+if [ ! -f "$STATE_DIR/config.yaml" ]; then
+  cat > "$STATE_DIR/config.yaml" << 'YAML'
+analytics_enabled: true
+last_update_check: ""
+active_product: ""
+YAML
+fi
+
+# Hint for non-git downloads
+if [ ! -d "$PKG_ROOT/.git" ]; then
+  echo ""
+  echo "Note: This is a downloaded copy. For automatic updates, clone the repo instead:"
+  echo "  git clone https://github.com/stefan-georgi/dtc-copywriting-skills.git"
+  echo "  cd dtc-copywriting-skills && ./setup"
+fi
+
+# Count skills (canonical only — skip variants and r2 experiments)
+SKILL_COUNT=$(find "$PKG_ROOT/skills" -maxdepth 2 -name "SKILL.md" -not -path "*-variant*" -not -path "*-r2-*" -not -path "*-ad1-*" | wc -l | tr -d ' ')
+VERSION=$(cat "$PKG_ROOT/VERSION" 2>/dev/null || echo "unknown")
+
+echo ""
+echo "RMBC Skills v$VERSION linked successfully ($SKILL_COUNT skills)"
+echo "Location: $TARGET_PATH -> $PKG_ROOT"
+echo ""
+echo "Next step: Add this to your CLAUDE.md:"
+echo '  ## RMBC Skills'
+echo '  Use /rmbc-router to access all RMBC copywriting skills.'

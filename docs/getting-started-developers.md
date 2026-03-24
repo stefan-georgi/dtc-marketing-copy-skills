@@ -13,7 +13,7 @@ This guide covers installing the RMBC Skills Package, running your first skill, 
 ### Claude Code CLI
 
 ```bash
-npx skills add StefanGeorgi/copywritingskills-rmbc
+npx skills add stefan-georgi/dtc-copywriting-skills
 ```
 
 This installs all RMBC skills into your local skills directory. You can then invoke them directly in Claude Code sessions.
@@ -21,7 +21,7 @@ This installs all RMBC skills into your local skills directory. You can then inv
 ### Manual Installation
 
 ```bash
-git clone https://github.com/StefanGeorgi/copywritingskills-rmbc.git
+git clone https://github.com/stefan-georgi/dtc-copywriting-skills.git
 ```
 
 Copy the `skills/` directory into your project's `.claude/skills/` or `~/.claude/skills/` directory.

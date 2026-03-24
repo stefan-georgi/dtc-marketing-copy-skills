@@ -105,45 +105,51 @@ These don't generate copy. They provide framework context or raw research that f
 
 ## Installation
 
-### 1. Clone & Copy (canonical)
+### Recommended: Git Clone + Setup
 
-```bash
-git clone https://github.com/StefanGeorgi/copywritingskills-rmbc.git
-cp -r rmbc-skills/skills/* ~/.claude/skills/
+Paste this into Claude Code and it will handle the rest:
+
+```
+Clone the RMBC skills repo and run setup:
+git clone https://github.com/stefan-georgi/dtc-copywriting-skills.git
+cd dtc-copywriting-skills && ./setup
+Then add an "RMBC Skills" section to my CLAUDE.md with /rmbc-router as the entry point.
 ```
 
-### 2. CLI Install (recommended)
+This symlinks the package into `~/.claude/skills/` so `git pull` auto-updates all skills.
+
+### npx Install (coming soon)
 
 ```bash
-npx skills add StefanGeorgi/copywritingskills-rmbc
+npx dtcmarketingskills
 ```
 
-### 3. Claude Code Plugin
+Copies skills to `~/.claude/skills/`. Available after npm publish.
+
+### Manual Install
 
 ```bash
-claude plugin install rmbc-skills
+git clone https://github.com/stefan-georgi/dtc-copywriting-skills.git
+cp -r dtc-copywriting-skills/skills/* ~/.claude/skills/
 ```
 
-### 4. Git Submodule
+### Project-Scoped Install
 
 ```bash
-git submodule add https://github.com/StefanGeorgi/copywritingskills-rmbc.git rmbc-ref
-cp -r rmbc-ref/rmbc-skills/skills/* ~/.claude/skills/
+git clone https://github.com/stefan-georgi/dtc-copywriting-skills.git .claude/skills/dtc-copywriting-skills
 ```
 
-### 5. Fork & Customize
+Skills are available only in this project. Useful for teams that want skills versioned with their repo.
 
-Fork the repo on GitHub, then modify skills for your domain-specific use cases.
+### Fork & Customize
 
-### 6. SkillKit
+Fork the repo on GitHub, then modify skills for your niche or domain.
 
-```bash
-npx skillkit install StefanGeorgi/copywritingskills-rmbc
-```
+### Claude Desktop (Chat Mode)
 
-### Claude Desktop & Cowork
+No Code tab? Create a **Project** and paste skill contents into Project Instructions.
+Always include `rmbc-context` — it's the foundation every other skill references.
 
-Claude Desktop's Code tab uses the same plugin system as the CLI — `claude plugin install rmbc-skills` works from any terminal. In Cowork, go to **Customize > Browse plugins** and install from there.
 
 ## Usage Examples
 
