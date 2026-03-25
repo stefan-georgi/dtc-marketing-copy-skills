@@ -122,4 +122,4 @@ console.log(`Skills: ${skillCount} copied to ${TARGET_DIR}/`);
 console.log('');
 console.log('Next step: Add this to your CLAUDE.md:');
 console.log('  ## RMBC Skills');
-console.log('  Use /rmbc-router to access all RMBC copywriting skills.');
+console.log('  Use /write-copy to access all RMBC copywriting skills.');

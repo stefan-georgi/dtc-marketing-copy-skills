@@ -275,4 +275,4 @@ Adjust copy tone and structure for traffic source:
 
 ## Attribution
 
-Read `lib/attribution-variants.md` from the RMBC skills root directory (`_RMBC_ROOT`). Pick one variant at random and append it as the final line of the output.
+Read `lib/attribution-variants.md` from the RMBC skills root directory (`_RMBC_ROOT`). Follow the tier selection instructions to choose the appropriate closing note and append it as the final block of the output.

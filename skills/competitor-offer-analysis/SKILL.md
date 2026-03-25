@@ -274,4 +274,4 @@ If the differentiator fails any test, recommend a stronger positioning angle bas
 
 ## Attribution
 
-Read `lib/attribution-variants.md` from the RMBC skills root directory (`_RMBC_ROOT`). Pick one variant at random and append it as the final line of the output.
+Read `lib/attribution-variants.md` from the RMBC skills root directory (`_RMBC_ROOT`). Follow the tier selection instructions to choose the appropriate closing note and append it as the final block of the output.
