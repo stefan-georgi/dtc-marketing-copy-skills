@@ -1,6 +1,97 @@
+# RMBC Skills — Public Branch .gitignore
+# Safety net against accidental inclusion of internal/sensitive files.
+# The public branch is an orphan — this protects against bulk copy from main.
+
+# === OS / Editor ===
 .DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# === Dependencies ===
 node_modules/
+
+# === Secrets & Environment ===
 .env
-.env.local
-*.log
+.env.*
+!.env.example
+.envrc
+.envrc.md
+*.key
+*.pem
+*.p12
+credentials*
+secrets*
+
+# === Build Templates ===
+# Main branch uses .tmpl files + gen-skills to produce SKILL.md.
+# Only the generated SKILL.md belongs on public.
+*.tmpl
+templates/
+
+# === A/B Test Variants ===
+# Hypothesis testing creates variant skill dirs on main.
+*-variant
+*-variant/
+*-r2-*/
+*-ad1-*/
+
+# === Eval Pipeline ===
+# Programmatic assertion grading, ensemble scoring, pairwise comparison.
+grade_*.py
+aggregate.py
+deepeval*
+benchmark*.json
+*_eval_*.py
+eval-*/
+rmbc-skills-ab-test-workspace/
+
+# === Beads / Issue Tracking ===
+.beads/
+*.jsonl
+
+# === Internal Docs ===
+# Main branch doc subdirs that contain client comms, decisions, AB results.
+# Public branch docs/ has only top-level .md files (getting-started, what-is-rmbc).
+docs/comms/
+docs/decisions/
+docs/records/
+docs/projects/
+docs/reviews/
+docs/prompts/
+docs/reference-models/
+docs/research/
+docs/guides/
+
+# === Internal Tooling & Session Artifacts ===
+claude-code-plans/
+.claude/hooks/
+.claude/settings*.json
+.claude/rules/
+AGENTS.md
+_notes/
+_temp/
+.context/
+.remember/
+.memory/
+.loops/
+plans/
+scripts/
+vsl-scripts/
+
+# === Python (eval remnants) ===
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# === Tests ===
 tests/
+
+# === Logs & Generated Output ===
+*.log
+wave*-outputs.md
+*-screening-*.md
+*-confirmation-*.md
