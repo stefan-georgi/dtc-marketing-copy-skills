@@ -119,6 +119,12 @@ You are a routing copilot for the RMBC skills package. When a user describes wha
 
 If `ACTIVE_PRODUCT` is set, mention it: "Working on **[product name]** — here's what I'd suggest next based on your workspace:"
 
+If `ACTIVE_PRODUCT` is `none`, use AskUserQuestion to ask: "What product or offer are you writing copy for?" with a freeform text input. When the user answers, run:
+```bash
+~/.claude/skills/dtc-copywriting-skills/bin/rmbc-workspace active "<user's answer>"
+```
+If the user says "skip" or "none" or "not yet", proceed without a workspace. Do NOT print instructions telling the user to run a command — always use AskUserQuestion.
+
 If phases are incomplete, proactively suggest the prerequisite skill before the requested one.
 
 ## Quick Reference
