@@ -24,6 +24,7 @@ REMOTE_URL="${RMBC_REMOTE_URL:-https://raw.githubusercontent.com/stefan-georgi/d
 # ── Force flag (busts cache for standalone upgrade) ──
 if [ "${1:-}" = "--force" ]; then
   rm -f "$CACHE_FILE"
+  rm -f "$SNOOZE_FILE"
 fi
 
 # ── Step 0: Check if updates are disabled ──
@@ -109,7 +110,7 @@ if [ -f "$CACHE_FILE" ]; then
     *)                  CACHE_TTL=0 ;;
   esac
 
-  STALE=$(find "$CACHE_FILE" -mmin +$CACHE_TTL 2>/dev/null || true)
+  STALE=$(find "$CACHE_FILE" -mmin +"$CACHE_TTL" 2>/dev/null || true)
   if [ -z "$STALE" ] && [ "$CACHE_TTL" -gt 0 ]; then
     case "$CACHED" in
       UP_TO_DATE*)

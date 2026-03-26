@@ -1,7 +1,8 @@
 {
   "name": "dtcmarketingskills",
   "version": "1.0.0",
-  "description": "Stefan Georgi's RMBC methodology — 41 agent skills for direct response copywriting. Works with Claude Code, Claude Desktop, and any Agent Skills-compatible platform.",
+  "type": "module",
+  "description": "Stefan Georgi's RMBC methodology — 44 agent skills for direct response copywriting. Works with Claude Code.",
   "bin": {
     "dtcmarketingskills": "./bin/install.mjs"
   },
@@ -28,6 +29,9 @@
     "agent-skills"
   ],
   "homepage": "https://github.com/stefan-georgi/dtc-copywriting-skills",
+  "engines": {
+    "node": ">=16"
+  },
   "license": "MIT",
   "author": "Stefan Georgi",
   "repository": {

@@ -1,0 +1,24 @@
+# Internal build tools
+bin/gen-skills
+bin/check-preamble
+bin/bump
+
+# GitHub repo config (not needed by npm consumers)
+.github/
+.claude-plugin/
+
+# Registry metadata
+skillfish.json
+
+# Archived files
+skills/rmbc-copy-audit/SKILL-standard-archived.md
+
+# Development
+rmbc-skills/
+rmbc-skills-ab-test-workspace/
+_temp/
+.beads/
+.remember/
+claude-code-plans/
+docs/
+.DS_Store

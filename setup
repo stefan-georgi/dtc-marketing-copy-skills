@@ -88,6 +88,7 @@ mkdir -p "$STATE_DIR"
 if [ ! -f "$STATE_DIR/config.yaml" ]; then
   cat > "$STATE_DIR/config.yaml" << 'YAML'
 analytics_enabled: true
+auto_upgrade: false
 last_update_check: ""
 active_product: ""
 YAML

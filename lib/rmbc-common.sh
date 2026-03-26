@@ -15,8 +15,8 @@ rmbc_ensure_config() {
   mkdir -p "$_RMBC_STATE_DIR"
   if [ ! -f "$_RMBC_CONFIG" ]; then
     cat > "$_RMBC_CONFIG" << 'EOF'
-proactive: true
-telemetry: true
+analytics_enabled: true
+auto_upgrade: false
 active_product: ""
 EOF
   fi

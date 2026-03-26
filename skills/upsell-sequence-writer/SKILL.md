@@ -37,7 +37,7 @@ _SESSION_COUNT=$(ls /tmp/rmbc-session-* 2>/dev/null | wc -l | tr -d ' '); touch 
 echo "SESSIONS: $_SESSION_COUNT"
 ```
 
-If output shows `UPGRADE_AVAILABLE <old> <new>`: read the `UPGRADE.md` file from the RMBC skills root directory and follow the "Inline upgrade flow" — present AskUserQuestion with 3 options (upgrade, snooze, disable). If `JUST_UPGRADED <old> <new>`: tell user "Running RMBC Skills v{new} (just updated from v{old})!" and continue.
+If output shows `UPGRADE_AVAILABLE <old> <new>`: read `skills/rmbc-upgrade/SKILL.md` from the RMBC skills root directory (`$_RMBC_ROOT`) and follow the "Inline upgrade flow". If `JUST_UPGRADED <old> <new>`: read `$_RMBC_ROOT/CHANGELOG.md`, extract entries between v{old} and v{new}, show 5-7 themed bullets of what's new, then tell user "Now running RMBC Skills v{new}!" and continue.
 
 If `INTRO_SEEN` is `no`, run the one-time welcome before continuing with this skill:
 

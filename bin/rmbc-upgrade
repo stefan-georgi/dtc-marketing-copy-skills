@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# rmbc-upgrade — Execute RMBC Skills upgrade.
+#
+# Output (machine-readable lines):
+#   INSTALL_TYPE=git-symlink|direct-git|npm-copy
+#   UPGRADED <old> <new>
+#   STASH_WARNING=true          (if git stash was used)
+#
+# This script does NOT interact with the user or show changelog.
+# The calling skill (rmbc-upgrade) handles UX.
+
+RMBC_DIR="${RMBC_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
+STATE_DIR="${RMBC_STATE_DIR:-$HOME/.rmbc-skills}"
+MARKER_FILE="$STATE_DIR/just-upgraded-from"
+CACHE_FILE="$STATE_DIR/last-update-check"
+SNOOZE_FILE="$STATE_DIR/update-snoozed"
+
+mkdir -p "$STATE_DIR"
+
+# Read current version before upgrade
+OLD_VERSION=""
+if [[ -f "$RMBC_DIR/VERSION" ]]; then
+  OLD_VERSION="$(tr -d '[:space:]' < "$RMBC_DIR/VERSION")"
+fi
+
+# ── Detect install type ──
+INSTALL_TYPE="unknown"
+INSTALL_TARGET=""
+
+# Check ~/.claude/skills/dtc-copywriting-skills
+TARGET="$HOME/.claude/skills/dtc-copywriting-skills"
+
+if [[ -L "$TARGET" ]]; then
+  # Symlink — resolve to real path
+  REAL_PATH="$(readlink "$TARGET")"
+  if [[ -d "$REAL_PATH/.git" ]]; then
+    INSTALL_TYPE="git-symlink"
+    INSTALL_TARGET="$REAL_PATH"
+  else
+    INSTALL_TYPE="npm-copy"
+    INSTALL_TARGET="$TARGET"
+  fi
+elif [[ -d "$TARGET/.git" ]]; then
+  INSTALL_TYPE="direct-git"
+  INSTALL_TARGET="$TARGET"
+elif [[ -d "$TARGET" ]]; then
+  INSTALL_TYPE="npm-copy"
+  INSTALL_TARGET="$TARGET"
+else
+  echo "Error: RMBC Skills not found at $TARGET" >&2
+  exit 1
+fi
+
+echo "INSTALL_TYPE=$INSTALL_TYPE"
+
+# ── Upgrade based on install type ──
+case "$INSTALL_TYPE" in
+  git-symlink|direct-git)
+    cd "$INSTALL_TARGET"
+
+    # Stash any local changes
+    STASHED=false
+    if ! git diff --quiet 2>/dev/null || ! git diff --cached --quiet 2>/dev/null; then
+      git stash push -m "rmbc-upgrade auto-stash" >/dev/null 2>&1
+      STASHED=true
+    fi
+
+    git fetch origin >/dev/null 2>&1
+    git reset --hard origin/main >/dev/null 2>&1
+
+    # Re-run setup to refresh symlinks
+    if [[ -x "$INSTALL_TARGET/setup" ]]; then
+      "$INSTALL_TARGET/setup" >/dev/null 2>&1
+    fi
+
+    if [[ "$STASHED" = true ]]; then
+      echo "STASH_WARNING=true"
+    fi
+    ;;
+
+  npm-copy)
+    # Clone fresh to temp, swap atomically
+    TMP_DIR="$(mktemp -d)"
+    trap 'rm -rf "$TMP_DIR"' EXIT
+
+    git clone --depth 1 https://github.com/stefan-georgi/dtc-copywriting-skills.git "$TMP_DIR/pkg" >/dev/null 2>&1
+
+    BACKUP="${INSTALL_TARGET}.bak"
+    rm -rf "$BACKUP"
+    mv "$INSTALL_TARGET" "$BACKUP"
+    mv "$TMP_DIR/pkg" "$INSTALL_TARGET"
+
+    # Re-run setup from new install
+    if [[ -x "$INSTALL_TARGET/setup" ]]; then
+      "$INSTALL_TARGET/setup" >/dev/null 2>&1
+    fi
+
+    rm -rf "$BACKUP"
+    ;;
+esac
+
+# Read new version
+NEW_VERSION=""
+if [[ -f "$INSTALL_TARGET/VERSION" ]]; then
+  NEW_VERSION="$(tr -d '[:space:]' < "$INSTALL_TARGET/VERSION")"
+elif [[ -f "$RMBC_DIR/VERSION" ]]; then
+  NEW_VERSION="$(tr -d '[:space:]' < "$RMBC_DIR/VERSION")"
+fi
+
+# Write marker for next skill invocation
+printf '%s\n' "$OLD_VERSION" > "$MARKER_FILE"
+
+# Clear cache and snooze
+rm -f "$CACHE_FILE" "$SNOOZE_FILE"
+
+echo "UPGRADED $OLD_VERSION $NEW_VERSION"

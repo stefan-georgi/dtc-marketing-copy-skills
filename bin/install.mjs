@@ -54,7 +54,8 @@ const COPY_ITEMS = [
   { src: 'bin/rmbc-workspace', type: 'file' },
   { src: 'lib', type: 'dir' },
   { src: 'VERSION', type: 'file' },
-  { src: 'UPGRADE.md', type: 'file' },
+  { src: 'CHANGELOG.md', type: 'file' },
+  { src: 'bin/rmbc-upgrade', type: 'file' },
   { src: 'README.md', type: 'file' },
   { src: 'LICENSE', type: 'file' },
 ];
@@ -89,7 +90,7 @@ const STATE_DIR = join(homedir(), '.rmbc-skills');
 mkdirSync(STATE_DIR, { recursive: true });
 const CONFIG_PATH = join(STATE_DIR, 'config.yaml');
 if (!existsSync(CONFIG_PATH)) {
-  writeFileSync(CONFIG_PATH, 'analytics_enabled: true\nlast_update_check: ""\nactive_product: ""\n');
+  writeFileSync(CONFIG_PATH, 'analytics_enabled: true\nauto_upgrade: false\nlast_update_check: ""\nactive_product: ""\n');
 }
 
 // Copy individual skills into ~/.claude/skills/<name>/ for auto-discovery

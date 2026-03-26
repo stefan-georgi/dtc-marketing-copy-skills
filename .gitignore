@@ -69,6 +69,7 @@ claude-code-plans/
 .claude/hooks/
 .claude/settings*.json
 .claude/rules/
+.claude/skills/
 AGENTS.md
 _notes/
 _temp/
