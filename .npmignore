@@ -1,3 +1,6 @@
+# Build templates (main branch uses .tmpl + gen-skills to produce SKILL.md)
+*.tmpl
+
 # Internal build tools
 bin/gen-skills
 bin/check-preamble
