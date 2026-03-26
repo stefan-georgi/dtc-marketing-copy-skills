@@ -81,23 +81,8 @@ case "$INSTALL_TYPE" in
     ;;
 
   npm-copy)
-    # Clone fresh to temp, swap atomically
-    TMP_DIR="$(mktemp -d)"
-    trap 'rm -rf "$TMP_DIR"' EXIT
-
-    git clone --depth 1 https://github.com/stefan-georgi/dtc-copywriting-skills.git "$TMP_DIR/pkg" >/dev/null 2>&1
-
-    BACKUP="${INSTALL_TARGET}.bak"
-    rm -rf "$BACKUP"
-    mv "$INSTALL_TARGET" "$BACKUP"
-    mv "$TMP_DIR/pkg" "$INSTALL_TARGET"
-
-    # Re-run setup from new install
-    if [[ -x "$INSTALL_TARGET/setup" ]]; then
-      "$INSTALL_TARGET/setup" >/dev/null 2>&1
-    fi
-
-    rm -rf "$BACKUP"
+    # Re-run npm installer (preserves npm install type)
+    npx dtcmarketingskills
     ;;
 esac
 

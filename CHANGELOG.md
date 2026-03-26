@@ -3,6 +3,17 @@
 All notable changes to RMBC Skills are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), [Semantic Versioning](https://semver.org/).
 
+## 1.0.1 (2026-03-26)
+
+Post-publish audit fixes.
+
+- Remove internal files from public repo (.beads/, dev tools)
+- Fix skill count: 41/42 → 44 in README, skillfish.json, marketplace.json
+- Add CONTRIBUTING.md (was a broken link)
+- Harden .npmignore recursive .tmpl exclusion
+- Fix eureka_log JSON injection bug in rmbc-analytics
+- Fix rmbc-upgrade npm-copy path to use npx instead of git clone
+
 ## 1.0.0 (2026-03-26)
 
 Initial public release.

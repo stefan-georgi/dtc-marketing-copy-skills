@@ -1,6 +1,6 @@
 {
   "name": "dtcmarketingskills",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "Stefan Georgi's RMBC methodology — 44 agent skills for direct response copywriting. Works with Claude Code.",
   "bin": {

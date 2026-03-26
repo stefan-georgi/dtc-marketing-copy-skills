@@ -114,13 +114,6 @@ cmd_dashboard() {
   echo "─────────────────────────────"
 
   # ── Bar chart (top 10) ──
-  local max_count=0
-  echo "$usage_counts" | head -10 | while read -r count skill; do
-    if [[ $count -gt $max_count ]]; then
-      max_count=$count
-    fi
-  done
-
   if [[ -z "$usage_counts" ]]; then
     echo "(no data)"
   else
@@ -234,7 +227,8 @@ cmd_eureka_log() {
 
   # Inject timestamp into JSON (before closing brace)
   local entry
-  entry="${json%\}},\"ts\":\"$ts\"}"
+  local trimmed="${json%\}}"
+  entry="${trimmed},\"ts\":\"$ts\"}"
 
   echo "$entry" >> "$EUREKA_LOG"
 }

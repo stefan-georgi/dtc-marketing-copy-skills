@@ -26,7 +26,7 @@ Every copy-generation skill enforces 5 quality gates that were validated through
 - **Proof diversity** — 2+ proof types required (testimonial, statistical, authority, case study)
 - **Objection handling** — 2+ objections addressed with concrete responses
 
-## Available Skills (41)
+## Available Skills (44)
 
 ### Benchmark-Tested (3 skills)
 

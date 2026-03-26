@@ -1,5 +1,5 @@
 # Build templates (main branch uses .tmpl + gen-skills to produce SKILL.md)
-*.tmpl
+**/*.tmpl
 
 # Internal build tools
 bin/gen-skills
