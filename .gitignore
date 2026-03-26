@@ -24,11 +24,16 @@ node_modules/
 credentials*
 secrets*
 
-# === Build Templates ===
+# === Build Templates & Internal Dev Tools ===
 # Main branch uses .tmpl files + gen-skills to produce SKILL.md.
 # Only the generated SKILL.md belongs on public.
 *.tmpl
 templates/
+bin/gen-skills
+bin/check-preamble
+bin/bump
+lib/attribution-variants.md
+rmbc-skills/
 
 # === A/B Test Variants ===
 # Hypothesis testing creates variant skill dirs on main.
@@ -66,10 +71,7 @@ docs/guides/
 
 # === Internal Tooling & Session Artifacts ===
 claude-code-plans/
-.claude/hooks/
-.claude/settings*.json
-.claude/rules/
-.claude/skills/
+.claude/
 AGENTS.md
 _notes/
 _temp/
