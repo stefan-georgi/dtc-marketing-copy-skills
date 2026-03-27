@@ -32,6 +32,23 @@
   "engines": {
     "node": ">=16"
   },
+  "files": [
+    "skills/",
+    "bin/install.mjs",
+    "bin/rmbc-analytics",
+    "bin/rmbc-update-check",
+    "bin/rmbc-upgrade",
+    "bin/rmbc-workspace",
+    "lib/rmbc-common.sh",
+    "setup",
+    "README.md",
+    "LICENSE",
+    "VERSION",
+    "CHANGELOG.md",
+    "UPGRADE.md",
+    "BENCHMARK_RESULTS.md",
+    "CONTRIBUTING.md"
+  ],
   "license": "MIT",
   "author": "Stefan Georgi",
   "repository": {
