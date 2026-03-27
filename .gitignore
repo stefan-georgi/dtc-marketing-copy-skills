@@ -29,10 +29,14 @@ secrets*
 # Only the generated SKILL.md belongs on public.
 *.tmpl
 templates/
-bin/gen-skills
-bin/check-preamble
-bin/bump
-lib/attribution-variants.md
+bin/*
+!bin/install.mjs
+!bin/rmbc-analytics
+!bin/rmbc-update-check
+!bin/rmbc-upgrade
+!bin/rmbc-workspace
+lib/*
+!lib/rmbc-common.sh
 rmbc-skills/
 
 # === A/B Test Variants ===
@@ -57,17 +61,11 @@ rmbc-skills-ab-test-workspace/
 *.jsonl
 
 # === Internal Docs ===
-# Main branch doc subdirs that contain client comms, decisions, AB results.
-# Public branch docs/ has only top-level .md files (getting-started, what-is-rmbc).
-docs/comms/
-docs/decisions/
-docs/records/
-docs/projects/
-docs/reviews/
-docs/prompts/
-docs/reference-models/
-docs/research/
-docs/guides/
+# No docs/ files are tracked on public branch.
+docs/
+
+# === Registry Manifests (managed externally) ===
+skillfish.json
 
 # === Internal Tooling & Session Artifacts ===
 claude-code-plans/
