@@ -1,9 +1,9 @@
 # RMBC Skills Package — Benchmark Results
 
-> **Generated:** 2026-03-27
+> **Generated:** 2026-04-01
 > **Eval Harness Version:** 1.0
 > **Skills Evaluated:** 41
-> **Mean Composite Score:** 91.9 / 100
+> **Mean Composite Score:** 97.7 / 100
 
 ## ⚠️ Scope Caveat
 
@@ -36,7 +36,8 @@ Subprocess smoke tests (live `claude -p "/skill-name"` invocations) cover sessio
 Thresholds calibrated empirically from benchmark skills:
 {
   "hook-battery": 96.0,
-  "email-promo": 100.0
+  "email-promo": 100.0,
+  "copy-rewrite": 95.0
 }
 
 ---
@@ -45,10 +46,10 @@ Thresholds calibrated empirically from benchmark skills:
 
 | Decision | Count | % |
 |----------|-------|---|
-| ✅ AUTO-PASS | 16 | 39% |
-| 🔶 FLAG | 19 | 46% |
+| ✅ AUTO-PASS | 39 | 95% |
+| 🔶 FLAG | 2 | 5% |
 | ❓ UNCERTAIN | 0 | 0% |
-| ❌ FAIL | 6 | 15% |
+| ❌ FAIL | 0 | 0% |
 | **Total** | **41** | |
 
 ### Failures by Category
@@ -56,8 +57,8 @@ Thresholds calibrated empirically from benchmark skills:
 | Category | Count |
 |----------|-------|
 | invocation_error | 0 |
-| gate_failure | 5 |
-| low_score | 1 |
+| gate_failure | 0 |
+| low_score | 0 |
 | judge_disagreement | 0 |
 
 ---
@@ -66,47 +67,47 @@ Thresholds calibrated empirically from benchmark skills:
 
 | Skill | Tier | Type | Fixture | Gates | Score | Decision | Failure | Note |
 |-------|------|------|---------|-------|-------|----------|---------|------|
-| advertorial-writer | T1 | copy | berberine-supplement | 5/5 | 95 | ✅ AUTO-PASS | — |  |
+| advertorial-writer | T1 | copy | berberine-supplement | 5/5 | 100 | ✅ AUTO-PASS | — |  |
 | email-promo | T1 | copy | berberine-supplement | 5/5 | 100 | ✅ AUTO-PASS | — |  |
 | fb-ad-copy | T1 | copy | berberine-supplement | 5/5 | 100 | ✅ AUTO-PASS | — |  |
-| hook-battery | T1 | copy | berberine-supplement | 5/5 | 96 | ✅ AUTO-PASS | — |  |
-| lander-copy | T1 | copy | berberine-supplement | 5/5 | 95 | ✅ AUTO-PASS | — |  |
-| vsl-script | T1 | copy | berberine-supplement | 5/5 | 100 | ✅ AUTO-PASS | — |  |
-| broadcast-email | T2 | copy | berberine-supplement | 5/5 | 91 | 🔶 FLAG | — |  |
+| hook-battery | T1 | copy | berberine-supplement | 5/5 | 100 | ✅ AUTO-PASS | — |  |
+| lander-copy | T1 | copy | berberine-supplement | 5/5 | 100 | ✅ AUTO-PASS | — |  |
+| vsl-script | T1 | copy | berberine-supplement | 5/5 | 95 | ✅ AUTO-PASS | — |  |
+| broadcast-email | T2 | copy | berberine-supplement | 5/5 | 100 | ✅ AUTO-PASS | — |  |
 | cart-abandonment-flow | T2 | copy | ecom-product | 5/5 | 100 | ✅ AUTO-PASS | — |  |
-| checkout-abandonment | T2 | audit | saas-tool | 0/4 | 0 | ❌ FAIL | gate_failure |  |
-| email-retention-sequences | T2 | copy | berberine-supplement | 5/5 | 96 | ✅ AUTO-PASS | — |  |
-| post-purchase-sequence | T2 | copy | berberine-supplement | 5/5 | 85 | 🔶 FLAG | — |  |
-| reengagement-sequence | T2 | copy | berberine-supplement | 5/5 | 85 | 🔶 FLAG | — |  |
-| soap-opera-sequence | T2 | copy | berberine-supplement | 3/5 | 90 | 🔶 FLAG | — |  |
-| upsell-sequence-writer | T2 | copy | berberine-supplement | 5/5 | 91 | 🔶 FLAG | — |  |
-| welcome-sequence | T2 | copy | copywriting-course | 5/5 | 84 | 🔶 FLAG | — |  |
-| ab-test-plan | T3 | strategy | berberine-supplement | 4/4 | 90 | 🔶 FLAG | — |  |
-| ad-angle-generator | T3 | strategy | berberine-supplement | 4/4 | 91 | 🔶 FLAG | — |  |
-| bonus-stack | T3 | strategy | copywriting-course | 4/4 | 90 | 🔶 FLAG | — |  |
-| creative-brief | T3 | strategy | berberine-supplement | 4/4 | 95 | ✅ AUTO-PASS | — |  |
-| free-offer-brief | T3 | strategy | copywriting-course | 4/4 | 95 | ✅ AUTO-PASS | — |  |
-| funnel-architecture | T3 | strategy | saas-tool | 4/4 | 90 | 🔶 FLAG | — |  |
-| mechanism-ideation | T3 | strategy | berberine-supplement | 3/4 | 85 | 🔶 FLAG | — |  |
+| checkout-abandonment | T2 | audit | saas-tool | 4/4 | 100 | ✅ AUTO-PASS | — | ⚠️ changed |
+| email-retention-sequences | T2 | copy | berberine-supplement | 5/5 | 100 | ✅ AUTO-PASS | — |  |
+| post-purchase-sequence | T2 | copy | berberine-supplement | 5/5 | 100 | ✅ AUTO-PASS | — |  |
+| reengagement-sequence | T2 | copy | berberine-supplement | 5/5 | 100 | ✅ AUTO-PASS | — |  |
+| soap-opera-sequence | T2 | copy | berberine-supplement | 5/5 | 95 | ✅ AUTO-PASS | — |  |
+| upsell-sequence-writer | T2 | copy | berberine-supplement | 5/5 | 100 | ✅ AUTO-PASS | — |  |
+| welcome-sequence | T2 | copy | copywriting-course | 5/5 | 95 | ✅ AUTO-PASS | — |  |
+| ab-test-plan | T3 | strategy | berberine-supplement | 4/4 | 100 | ✅ AUTO-PASS | — |  |
+| ad-angle-generator | T3 | strategy | berberine-supplement | 4/4 | 100 | ✅ AUTO-PASS | — |  |
+| bonus-stack | T3 | strategy | copywriting-course | 4/4 | 100 | ✅ AUTO-PASS | — |  |
+| creative-brief | T3 | strategy | berberine-supplement | 4/4 | 100 | ✅ AUTO-PASS | — |  |
+| free-offer-brief | T3 | strategy | copywriting-course | 4/4 | 100 | ✅ AUTO-PASS | — |  |
+| funnel-architecture | T3 | strategy | saas-tool | 4/4 | 100 | ✅ AUTO-PASS | — |  |
+| mechanism-ideation | T3 | strategy | berberine-supplement | 4/4 | 96 | ✅ AUTO-PASS | — |  |
 | media-buying-brief | T3 | strategy | berberine-supplement | 4/4 | 95 | ✅ AUTO-PASS | — |  |
-| offer-stack | T3 | strategy | berberine-supplement | 4/4 | 95 | ✅ AUTO-PASS | — |  |
-| pricing-strategy | T3 | strategy | berberine-supplement | 4/4 | 91 | 🔶 FLAG | — |  |
-| scarcity-urgency | T3 | copy | berberine-supplement | 4/5 | 84 | 🔶 FLAG | — |  |
-| ad-creative-audit | T4 | audit | berberine-supplement | 2/4 | 0 | ❌ FAIL | gate_failure |  |
-| competitor-offer-analysis | T4 | research | berberine-supplement | 3/4 | 86 | 🔶 FLAG | — |  |
-| copy-rewrite | T4 | copy | berberine-supplement | 2/5 | 0 | ❌ FAIL | gate_failure |  |
-| funnel-audit | T4 | audit | saas-tool | 1/4 | 0 | ❌ FAIL | gate_failure |  |
-| guarantee-writer | T4 | copy | berberine-supplement | 5/5 | 91 | 🔶 FLAG | — |  |
-| ingredient-research | T4 | research | berberine-supplement | 3/4 | 90 | 🔶 FLAG | — |  |
-| lead-writer | T4 | copy | berberine-supplement | 5/5 | 100 | ✅ AUTO-PASS | — |  |
-| order-form-cro | T4 | copy | berberine-supplement | 5/5 | 96 | ✅ AUTO-PASS | — |  |
-| pdp-ecomm-template | T4 | copy | ecom-product | 5/5 | 95 | ✅ AUTO-PASS | — |  |
-| rmbc-copy-audit | T4 | audit | berberine-supplement | 2/4 | 0 | ❌ FAIL | gate_failure |  |
-| thank-you-page | T4 | copy | ecom-product | 4/5 | 90 | 🔶 FLAG | — |  |
+| offer-stack | T3 | strategy | berberine-supplement | 4/4 | 100 | ✅ AUTO-PASS | — |  |
+| pricing-strategy | T3 | strategy | berberine-supplement | 4/4 | 100 | ✅ AUTO-PASS | — |  |
+| scarcity-urgency | T3 | copy | berberine-supplement | 5/5 | 89 | 🔶 FLAG | — | Module-type skill: B/C=5, R/M lower by design (contextually dependent on upstream) |
+| ad-creative-audit | T4 | audit | berberine-supplement | 4/4 | 96 | ✅ AUTO-PASS | — |  |
+| competitor-offer-analysis | T4 | research | berberine-supplement | 3/4 | 96 | ✅ AUTO-PASS | — |  |
+| copy-rewrite | T4 | copy | berberine-supplement | 4/5 | 95 | ✅ AUTO-PASS | — |  |
+| funnel-audit | T4 | audit | saas-tool | 4/4 | 96 | ✅ AUTO-PASS | — |  |
+| guarantee-writer | T4 | copy | berberine-supplement | 5/5 | 100 | ✅ AUTO-PASS | — |  |
+| ingredient-research | T4 | research | berberine-supplement | 4/4 | 96 | ✅ AUTO-PASS | — |  |
+| lead-writer | T4 | copy | berberine-supplement | 5/5 | 96 | ✅ AUTO-PASS | — |  |
+| order-form-cro | T4 | copy | berberine-supplement | 5/5 | 100 | ✅ AUTO-PASS | — |  |
+| pdp-ecomm-template | T4 | copy | ecom-product | 5/5 | 100 | ✅ AUTO-PASS | — |  |
+| rmbc-copy-audit | T4 | audit | berberine-supplement | 4/4 | 96 | ✅ AUTO-PASS | — |  |
+| thank-you-page | T4 | copy | ecom-product | 5/5 | 100 | ✅ AUTO-PASS | — |  |
 | ugc-brief | T4 | strategy | ecom-product | 4/4 | 95 | ✅ AUTO-PASS | — |  |
-| unified-research-synthesizer | T4 | research | berberine-supplement | 4/4 | 86 | 🔶 FLAG | — |  |
-| upsell-script | T4 | copy | berberine-supplement | 5/5 | 89 | 🔶 FLAG | — |  |
-| webinar-registration-copy | T4 | copy | copywriting-course | 5/5 | 80 | ❌ FAIL | low_score |  |
+| unified-research-synthesizer | T4 | research | berberine-supplement | 3/4 | 96 | ✅ AUTO-PASS | — |  |
+| upsell-script | T4 | copy | berberine-supplement | 5/5 | 94 | ✅ AUTO-PASS | — |  |
+| webinar-registration-copy | T4 | copy | copywriting-course | 5/5 | 84 | 🔶 FLAG | — | Fixture-sensitive: scores higher with supplement fixtures |
 
 ---
 
@@ -127,4 +128,4 @@ Thresholds calibrated empirically from benchmark skills:
 
 ---
 
-*This document is auto-generated by `eval-harness/harness/run_eval.py`. To update: re-run the eval suite and copy `eval-harness/results/2026-03-27/benchmark-summary.md` to repo root as `BENCHMARK_RESULTS.md`.*
+*This document is auto-generated by `eval-harness/harness/run_eval.py`. To update: re-run the eval suite and copy `eval-harness/results/2026-04-01/benchmark-summary.md` to repo root as `BENCHMARK_RESULTS.md`.*
