@@ -62,7 +62,8 @@ rmbc-skills-ab-test-workspace/
 
 # === Internal Docs ===
 # No docs/ files are tracked on public branch.
-docs/
+docs/*
+!docs/benchmark-results.md
 
 # === Registry Manifests (managed externally) ===
 skillfish.json
