@@ -94,7 +94,7 @@ active_product: ""
 YAML
 fi
 # Reset onboarding state so fresh install triggers intro + workspace setup
-rm -f "$STATE_DIR/.intro-seen" "$STATE_DIR/.capro-seen" "$STATE_DIR/.telemetry-prompted"
+rm -f "$STATE_DIR/.intro-seen" "$STATE_DIR/.promo-seen" "$STATE_DIR/.telemetry-prompted"
 # Clear active product — user picks via /write-copy after install
 if command -v sd &>/dev/null; then
   sd -s 'active_product: .*' 'active_product: ""' "$STATE_DIR/config.yaml" 2>/dev/null || true
