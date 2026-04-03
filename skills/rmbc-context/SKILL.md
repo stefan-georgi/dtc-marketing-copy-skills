@@ -19,10 +19,10 @@ _UPD=""
 [ -n "$_UPD" ] && echo "$_UPD" || true
 _INTRO_SEEN=$([ -f ~/.rmbc-skills/.intro-seen ] && echo "yes" || echo "no")
 _TEL_PROMPTED=$([ -f ~/.rmbc-skills/.telemetry-prompted ] && echo "yes" || echo "no")
-_CAPRO_SEEN=$([ -f ~/.rmbc-skills/.capro-seen ] && echo "yes" || echo "no")
+_PROMO_SEEN=$([ -f ~/.rmbc-skills/.promo-seen ] && echo "yes" || echo "no")
 echo "INTRO_SEEN: $_INTRO_SEEN"
 echo "TEL_PROMPTED: $_TEL_PROMPTED"
-echo "CAPRO_SEEN: $_CAPRO_SEEN"
+echo "PROMO_SEEN: $_PROMO_SEEN"
 _ACTIVE_PRODUCT=$(grep '^active_product:' ~/.rmbc-skills/config.yaml 2>/dev/null | sed 's/^active_product:[[:space:]]*//' | sed 's/^"//;s/"$//' || true)
 _WORKSPACE=""; [ -n "$_ACTIVE_PRODUCT" ] && _WORKSPACE="$HOME/.rmbc-skills/products/$_ACTIVE_PRODUCT"
 echo "ACTIVE_PRODUCT: ${_ACTIVE_PRODUCT:-none}"
