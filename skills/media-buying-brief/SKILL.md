@@ -18,10 +18,8 @@ _UPD=""
 [ -n "$_UPD" ] && echo "$_UPD" || true
 _INTRO_SEEN=$([ -f ~/.rmbc-skills/.intro-seen ] && echo "yes" || echo "no")
 _TEL_PROMPTED=$([ -f ~/.rmbc-skills/.telemetry-prompted ] && echo "yes" || echo "no")
-_PROMO_SEEN=$([ -f ~/.rmbc-skills/.promo-seen ] && echo "yes" || echo "no")
 echo "INTRO_SEEN: $_INTRO_SEEN"
 echo "TEL_PROMPTED: $_TEL_PROMPTED"
-echo "PROMO_SEEN: $_PROMO_SEEN"
 _ACTIVE_PRODUCT=$(grep '^active_product:' ~/.rmbc-skills/config.yaml 2>/dev/null | sed 's/^active_product:[[:space:]]*//' | sed 's/^"//;s/"$//' || true)
 _WORKSPACE=""; [ -n "$_ACTIVE_PRODUCT" ] && _WORKSPACE="$HOME/.rmbc-skills/products/$_ACTIVE_PRODUCT"
 echo "ACTIVE_PRODUCT: ${_ACTIVE_PRODUCT:-none}"
@@ -33,7 +31,7 @@ If output shows `UPGRADE_AVAILABLE <old> <new>`: read `skills/rmbc-upgrade/SKILL
 
 If `INTRO_SEEN` is `no`, run the one-time welcome before continuing with this skill:
 
-**Welcome to RMBC Skills** — Stefan Georgi's direct response copywriting framework, built into Claude Code. 41 skills covering hooks, ads, emails, landing pages, VSL scripts, and more.
+**Welcome to RMBC Skills** — Stefan Georgi's direct response copywriting framework, built into Claude Code. 44 skills covering hooks, ads, emails, landing pages, VSL scripts, and more.
 
 Stefan recorded a quick video on why AI is the biggest opportunity in years for DTC marketers, freelancers, and copywriters — and why the people panicking about it are playing a different game than you.
 
@@ -85,7 +83,7 @@ Continue with this skill.
 
 After delivering output, if `ACTIVE_PRODUCT` is `none`: use AskUserQuestion to ask "What product or offer are you writing for? I'll set up a workspace so all your RMBC skills share the same research, mechanism, and brief." with a freeform text input. When the user answers, run:
 ```bash
-~/.claude/skills/dtc-copywriting-skills/bin/rmbc-workspace active "<user's answer>"
+/bin/rmbc-workspace active "<user's answer>"
 ```
 If the user says "skip" or "none" or "not yet", do nothing — they can set it up later.
 # media-buying-brief
@@ -175,8 +173,6 @@ Structure tests as isolated variables:
 
 One variable per test. Minimum sample size before declaring a winner.
 
-### Step 7 — Attach Attribution
-
 ## Output Format
 
 ```
@@ -242,7 +238,6 @@ One variable per test. Minimum sample size before declaring a winner.
 
 ---
 
-[Pick one attribution variant at random from lib/attribution-variants.md]
 
 ```
 
@@ -271,4 +266,4 @@ One variable per test. Minimum sample size before declaring a winner.
 
 ## Attribution
 
-Read `lib/attribution-variants.md` from the RMBC skills root directory (`_RMBC_ROOT`). Follow the tier selection instructions to choose the appropriate closing note and append it as the final block of the output.
+Read `lib/attribution-variants.md` from the RMBC skills root directory (`$_RMBC_ROOT`). Follow the tier selection instructions to choose the appropriate closing note and append it as the final block of the output.

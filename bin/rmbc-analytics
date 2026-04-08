@@ -25,6 +25,11 @@ YELLOW='\033[0;33m'
 # shellcheck disable=SC2034
 NC='\033[0m'
 
+iso_to_epoch() {
+  local ts="$1"
+  date -u -j -f '%Y-%m-%dT%H:%M:%SZ' "$ts" '+%s' 2>/dev/null || date -u -d "$ts" '+%s'
+}
+
 # ── log subcommand ──
 cmd_log() {
   local skill product tier
@@ -137,37 +142,65 @@ cmd_dashboard() {
   echo ""
   echo "Top Sequences:"
   local sequences
-  sequences=$(awk -F'"' '
+  local prev_ts prev_product prev_skill current_ts current_product current_skill
+  local prev_epoch current_epoch delta
+  local seq_lines sequence_records_file
+  prev_ts=""
+  prev_product=""
+  prev_skill=""
+  seq_lines=""
+  sequence_records_file="$(mktemp)"
+
+  awk -F'"' '
     {
+      ts = "";
+      skill = "";
+      product = "";
       for (i=1; i<=NF; i++) {
-        if ($i ~ /ts/) {
-          ts[NR] = $(i+2);
+        if ($i ~ /^ts$/) {
+          ts = $(i+2);
         }
-        if ($i ~ /skill/) {
-          skill[NR] = $(i+2);
+        if ($i ~ /^skill$/) {
+          skill = $(i+2);
         }
-        if ($i ~ /product/) {
-          product[NR] = $(i+2);
+        if ($i ~ /^product$/) {
+          product = $(i+2);
         }
+      }
+      if (ts != "" && skill != "") {
+        print ts "\t" product "\t" skill;
       }
     }
-    END {
-      for (i=1; i<NR; i++) {
-        if (product[i] == product[i+1]) {
-          t1 = ts[i]; t2 = ts[i+1];
-          sub(/T.*/, "", t1); sub(/T.*/, "", t1);
-          sub(/T.*/, "", t2); sub(/T.*/, "", t2);
-          if (t1 == t2) {
-            seq = skill[i] " → " skill[i+1];
-            count[seq]++;
-          }
-        }
-      }
-      for (s in count) {
-        print count[s] " " s;
-      }
-    }
-  ' "$USAGE_LOG" | sort -rn | head -5)
+  ' "$USAGE_LOG" > "$sequence_records_file"
+
+  while IFS=$'\t' read -r current_ts current_product current_skill; do
+    if [[ -n "$prev_ts" && "$current_product" == "$prev_product" ]]; then
+      prev_epoch="$(iso_to_epoch "$prev_ts")"
+      current_epoch="$(iso_to_epoch "$current_ts")"
+      delta=$((current_epoch - prev_epoch))
+      if [[ $delta -ge 0 && $delta -le 3600 ]]; then
+        seq_lines="${seq_lines}${prev_skill} → ${current_skill}"$'\n'
+      fi
+    fi
+    prev_ts="$current_ts"
+    prev_product="$current_product"
+    prev_skill="$current_skill"
+  done < "$sequence_records_file"
+  rm -f "$sequence_records_file"
+
+  if [[ -n "$seq_lines" ]]; then
+    sequences=$(
+      printf '%s' "$seq_lines" \
+        | sed '/^$/d' \
+        | sort \
+        | uniq -c \
+        | sort -rn \
+        | head -5 \
+        | awk '{count = $1; $1 = ""; sub(/^ +/, "", $0); print count " " $0}'
+    )
+  else
+    sequences=""
+  fi
 
   if [[ -z "$sequences" ]]; then
     echo "  (no sequences)"

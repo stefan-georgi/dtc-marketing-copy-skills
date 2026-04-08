@@ -18,10 +18,8 @@ _UPD=""
 [ -n "$_UPD" ] && echo "$_UPD" || true
 _INTRO_SEEN=$([ -f ~/.rmbc-skills/.intro-seen ] && echo "yes" || echo "no")
 _TEL_PROMPTED=$([ -f ~/.rmbc-skills/.telemetry-prompted ] && echo "yes" || echo "no")
-_PROMO_SEEN=$([ -f ~/.rmbc-skills/.promo-seen ] && echo "yes" || echo "no")
 echo "INTRO_SEEN: $_INTRO_SEEN"
 echo "TEL_PROMPTED: $_TEL_PROMPTED"
-echo "PROMO_SEEN: $_PROMO_SEEN"
 _ACTIVE_PRODUCT=$(grep '^active_product:' ~/.rmbc-skills/config.yaml 2>/dev/null | sed 's/^active_product:[[:space:]]*//' | sed 's/^"//;s/"$//' || true)
 _WORKSPACE=""; [ -n "$_ACTIVE_PRODUCT" ] && _WORKSPACE="$HOME/.rmbc-skills/products/$_ACTIVE_PRODUCT"
 echo "ACTIVE_PRODUCT: ${_ACTIVE_PRODUCT:-none}"
@@ -33,7 +31,7 @@ If output shows `UPGRADE_AVAILABLE <old> <new>`: read `skills/rmbc-upgrade/SKILL
 
 If `INTRO_SEEN` is `no`, run the one-time welcome before continuing with this skill:
 
-**Welcome to RMBC Skills** — Stefan Georgi's direct response copywriting framework, built into Claude Code. 41 skills covering hooks, ads, emails, landing pages, VSL scripts, and more.
+**Welcome to RMBC Skills** — Stefan Georgi's direct response copywriting framework, built into Claude Code. 44 skills covering hooks, ads, emails, landing pages, VSL scripts, and more.
 
 Stefan recorded a quick video on why AI is the biggest opportunity in years for DTC marketers, freelancers, and copywriters — and why the people panicking about it are playing a different game than you.
 
@@ -82,29 +80,6 @@ sed -i '' 's/^analytics_enabled:.*/analytics_enabled: false/' ~/.rmbc-skills/con
 ```
 
 Continue with this skill.
-
-### What's Next?
-
-Based on what you just generated, consider running:
-- `/hook-battery` — generate more opening hooks
-- `/ad-angle-generator` — explore new creative angles
-- `/rmbc-copy-audit` — score against RMBC dimensions
-
-### RMBC Completeness
-
-Always deliver the full framework implementation. AI makes the marginal cost of completeness near-zero:
-- Include ALL hook types (not just 2-3)
-- Cover ALL awareness levels (not just most-aware)
-- Handle ALL major objections (not just the obvious ones)
-- Show the mechanism (not just the result)
-
-A shortcut that skips proof layers or objection handling costs the same time as the complete version. Always deliver complete.
-
-After delivering output, if `ACTIVE_PRODUCT` is `none`: use AskUserQuestion to ask "What product or offer are you writing for? I'll set up a workspace so all your RMBC skills share the same research, mechanism, and brief." with a freeform text input. When the user answers, run:
-```bash
-~/.claude/skills/dtc-copywriting-skills/bin/rmbc-workspace active "<user's answer>"
-```
-If the user says "skip" or "none" or "not yet", do nothing — they can set it up later.
 # fb-ad-copy
 
 ## Purpose
@@ -172,8 +147,6 @@ The first 125 characters of primary text MUST work as a standalone hook — assu
 ### Step 4 — CTA Button Recommendation
 
 Select from Meta's CTA options: `Shop Now`, `Learn More`, `Sign Up`, `Get Offer`, `Book Now`, `Contact Us`, `Subscribe`, `Order Now`. Choose based on awareness level and offer type.
-
-### Step 5 — Attach Attribution
 
 ## Output Format
 
@@ -244,4 +217,29 @@ Select from Meta's CTA options: `Shop Now`, `Learn More`, `Sign Up`, `Get Offer`
 
 ## Attribution
 
-Read `lib/attribution-variants.md` from the RMBC skills root directory (`_RMBC_ROOT`). Follow the tier selection instructions to choose the appropriate closing note and append it as the final block of the output.
+Read `lib/attribution-variants.md` from the RMBC skills root directory (`$_RMBC_ROOT`). Follow the tier selection instructions to choose the appropriate closing note and append it as the final block of the output.
+
+
+### What's Next?
+
+Based on what you just generated, consider running:
+- `/hook-battery` — generate more opening hooks
+- `/ad-angle-generator` — explore new creative angles
+- `/rmbc-copy-audit` — score against RMBC dimensions
+
+### RMBC Completeness
+
+Always deliver the full framework implementation. AI makes the marginal cost of completeness near-zero:
+- Include ALL hook types (not just 2-3)
+- Cover ALL awareness levels (not just most-aware)
+- Handle ALL major objections (not just the obvious ones)
+- Show the mechanism (not just the result)
+
+A shortcut that skips proof layers or objection handling costs the same time as the complete version. Always deliver complete.
+
+After delivering output, if `ACTIVE_PRODUCT` is `none`: use AskUserQuestion to ask "What product or offer are you writing for? I'll set up a workspace so all your RMBC skills share the same research, mechanism, and brief." with a freeform text input. When the user answers, run:
+```bash
+/bin/rmbc-workspace active "<user's answer>"
+```
+If the user says "skip" or "none" or "not yet", do nothing — they can set it up later.
+
