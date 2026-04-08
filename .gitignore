@@ -37,6 +37,7 @@ bin/*
 !bin/rmbc-workspace
 lib/*
 !lib/rmbc-common.sh
+!lib/attribution-variants.md
 rmbc-skills/
 
 # === A/B Test Variants ===
@@ -45,6 +46,8 @@ rmbc-skills/
 *-variant/
 *-r2-*/
 *-ad1-*/
+
+BENCHMARK_RESULTS.md
 
 # === Eval Pipeline ===
 # Programmatic assertion grading, ensemble scoring, pairwise comparison.

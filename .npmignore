@@ -14,9 +14,6 @@ bin/bump
 # Registry metadata
 skillfish.json
 
-# Internal variant config
-lib/attribution-variants.md
-
 # Archived files
 skills/rmbc-copy-audit/SKILL-standard-archived.md
 
