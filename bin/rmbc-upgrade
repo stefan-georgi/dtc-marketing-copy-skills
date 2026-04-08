@@ -68,7 +68,7 @@ case "$INSTALL_TYPE" in
     fi
 
     git fetch origin >/dev/null 2>&1
-    git reset --hard origin/main >/dev/null 2>&1
+    git reset --hard origin/public >/dev/null 2>&1
 
     # Re-run setup to refresh symlinks
     if [[ -x "$INSTALL_TARGET/setup" ]]; then

@@ -19,7 +19,7 @@ MARKER_FILE="$STATE_DIR/just-upgraded-from"
 SNOOZE_FILE="$STATE_DIR/update-snoozed"
 DISABLE_FILE="$STATE_DIR/update-check-disabled"
 VERSION_FILE="$RMBC_DIR/VERSION"
-REMOTE_URL="${RMBC_REMOTE_URL:-https://raw.githubusercontent.com/stefan-georgi/dtc-copywriting-skills/main/VERSION}"
+REMOTE_URL="${RMBC_REMOTE_URL:-https://raw.githubusercontent.com/stefan-georgi/dtc-copywriting-skills/public/VERSION}"
 
 # ── Force flag (busts cache for standalone upgrade) ──
 if [ "${1:-}" = "--force" ]; then
