@@ -104,3 +104,27 @@ wave*-outputs.md
 # Dolt database files (added by bd init)
 .dolt/
 *.db
+
+# Personal AI tooling (never commit)
+CLAUDE.md
+AGENTS.md
+.claude/
+.beads/
+.codex/
+.omx/
+.mcp.json
+.linear.toml
+.secrets-mode
+.envrc
+.env
+.env.*
+!.env.example
+!.envrc.md
+claude-code-plans/
+plans/
+probe-output/
+dogfood-output/
+_temp/
+.vercel/
+.env.vercel
+

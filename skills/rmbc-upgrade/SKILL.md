@@ -9,9 +9,11 @@ allowed-tools: [Bash, Read, AskUserQuestion]
 
 Two modes: **inline** (called by preambles when UPGRADE_AVAILABLE detected) and **standalone** (`/rmbc-upgrade`).
 
+**Variable convention:** `OLD_VER` and `NEW_VER` refer to version strings parsed from preamble output (e.g., from `UPGRADE_AVAILABLE 1.0.1 1.1.0`, `OLD_VER=1.0.1` and `NEW_VER=1.1.0`). `CUR_VER` refers to the currently installed version from `$_RMBC_ROOT/VERSION`.
+
 ## Inline Upgrade Flow
 
-Called by other skills when preamble output contains `UPGRADE_AVAILABLE <old> <new>`.
+Called by other skills when preamble output contains `UPGRADE_AVAILABLE <old> <new>`. Parse the two version strings into `OLD_VER` and `NEW_VER`.
 
 ### Step 1: Check auto-upgrade config
 
@@ -24,7 +26,7 @@ echo "AUTO_UPGRADE: ${_AUTO:-false}"
 If `AUTO_UPGRADE` is `true`: skip to Step 2 immediately.
 
 Otherwise, present AskUserQuestion:
-- Question: "RMBC Skills v{new} is available (you have v{old}). What would you like to do?"
+- Question: "RMBC Skills v$NEW_VER is available (you have v$OLD_VER). What would you like to do?"
 - Options:
   1. "Upgrade now"
   2. "Always auto-upgrade"
@@ -42,7 +44,7 @@ Handle responses:
 - **Remind me later** (snooze):
   ```bash
   _SNOOZE_FILE="$HOME/.rmbc-skills/update-snoozed"
-  _NEW="{new}"
+  _NEW="$NEW_VER"
   if [ -f "$_SNOOZE_FILE" ]; then
     _LEVEL=$(awk '{print $2}' "$_SNOOZE_FILE" 2>/dev/null || echo "0")
     _LEVEL=$((_LEVEL + 1))
@@ -77,7 +79,7 @@ If CHANGELOG.md is missing or has no entries for the version range, say "Upgrade
 
 ### Step 4: Continue
 
-Tell user "Now running RMBC Skills v{new}!" and continue with the original skill that triggered the upgrade.
+Tell user "Now running RMBC Skills v$NEW_VER!" and continue with the original skill that triggered the upgrade.
 
 ---
 
@@ -101,6 +103,6 @@ _RMBC_ROOT=""
 
 If output contains `UPGRADE_AVAILABLE`: follow the Inline Upgrade Flow above (Step 1 onward).
 
-If output is empty or `UP_TO_DATE`: tell user "RMBC Skills v{version} is up to date."
+If output is empty or `UP_TO_DATE`: read `$_RMBC_ROOT/VERSION` and tell user "RMBC Skills v$CUR_VER is up to date."
 
 If output contains `JUST_UPGRADED`: read CHANGELOG.md, show what's new since the old version.
