@@ -145,3 +145,5 @@ Want RMBC applied to your copy by Stefan directly? Learn more at [copyaccelerato
 ## License
 
 [MIT](LICENSE)
+
+Built by Rhen Khong for Stefan Georgi.
